@@ -29,6 +29,8 @@ def var vBloqueioAlteracaoCadastral as log.
 
 {/admcom/progr/api/acentos.i}
 def var var-qtdenov as char.
+def var var-dtultcpa as char. /* #11 */
+def var var-dtultnov as char. /* #11 */
 def var var-COMPROMETIMENTO_MENSAL as dec. 
 
 def var vlcsaida   as longchar.
@@ -1340,6 +1342,7 @@ then do:
         end.
 
         
+        run log("ID_BIOMETRIA " + texto(AtualizacaoDadosCliente.ID_BIOMETRIA)).
 
 
         vchar = if vprocessa_credito
@@ -1491,8 +1494,6 @@ then do:
                      AtualizacaoDadosCliente.numero_pdv,
                      neuclien.sit_credito,
                      vchar).
-
-            run log("ID_BIOMETRIA " + texto(AtualizacaoDadosCliente.ID_BIOMETRIA)).
 
             if vneurotech
             then do:
@@ -1753,6 +1754,10 @@ then do:
                     /* helio 22052023 ID 502416 */
                     var-QTDENOV = pega_prop("QTDENOV").
                     /**/ 
+                    /* PROP_DTULTCPA */     var-dtultcpa = pega_prop("DTULTCPA"). /* #11 */
+                    if var-dtultcpa = ? then var-dtultcpa = "".         
+                    /* PROP_DTULTNOV */     var-dtultnov = pega_prop("DTULTNOV"). /* #11 */
+                    if var-dtultnov = ? then var-dtultnov = "".         
 
                     vprops = 
                         /* helio 032021 politica de credito unificada */
@@ -1822,6 +1827,9 @@ then do:
                    + "&PROP_COMPROMETIMENTO_MENSAL="  + trim(string(var-COMPROMETIMENTO_MENSAL,"->>>>>>>>>>>>>>>>>>>>>>>>9.99"))  /* helio 11042022 - ajuste painel m~otor */
                    /* helio 22052023 ID 502416 */
                     + "&PROP_QTDENOV=" + (if var-QTDENOV = ? then ""  else string(var-QTDENOV))
+                    + "&PROP_DTULTCPA="     + var-dtultcpa /* #11 */
+                    + "&PROP_DTULTNOV="     + var-dtultnov /* #11 */
+                    
                     /**/
                         /* helio 27062023 */
                        + "&PROP_PATRIMONIO=" + texto(clien.patrimonio)    
