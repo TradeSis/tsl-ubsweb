@@ -1,0 +1,178 @@
+body {
+    background-color: rgb(47, 177, 43);
+    color: white;
+    align-content: center;
+    align-self: center;
+    align-items: center;
+    font-family: 'Titillium Web', sans-serif;    
+}
+#row {
+    margin-left: 20%;
+    margin-right: 20%;
+    margin-top: 10px;
+}
+
+#partedecima {
+    margin-top: 5%;
+    margin-left: 30%;
+    margin-right: 30%;
+    margin-bottom: 20px;
+}
+
+#tabela {
+    font-family: 'Titillium Web', sans-serif;    
+    border-collapse: collapse;
+    margin-left: 10%;
+    width:80%;
+    margin-top: 35px;
+    margin-bottom: 40px;
+}
+  
+#tabela td, #tabela th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#tabela tr {
+    color: black;
+    
+}
+
+#tabela tr:nth-child(even){background-color: #f2f2f2;}
+#tabela tr:nth-child(odd){background-color: #fff;}
+  
+#tabela tr:hover {background-color: #ddd;}
+  
+#tabela th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: rgb(156,204,61); /* verdinho */
+    color: white;
+}
+
+#tabela td:nth-child(1) { 
+    width: 15%;
+  }
+
+#tabela td:nth-child(3) {
+    width: 8%;
+    text-align: right;
+  }
+
+#tabela td:nth-child(4) {
+    width: 8%;
+  }
+
+#tabela td:nth-child(5) {
+    width: 8%;
+    text-align: right;
+  }
+
+#tabela td:nth-child(6) {
+    width: 20%;
+  }
+
+#tabela td:nth-child(7) {
+    width: 30px;
+  }
+
+
+.botao {
+    background-color: #ff9000; /* laranjinha */
+    color: white;
+    font-weight: bold;
+    border-radius: 4px; 
+    border: none;
+    margin-top: 10px;
+}
+
+
+
+#partedebaixo {
+    margin-top: 30px;
+    margin-left: 25%;
+    margin-right: 25%;
+    height: 40px
+}
+
+#btsalvar {
+    margin-right: 20px;
+    max-height: 50px; /*                     MUDEI                    */
+}
+
+#btregistrar {
+    margin-top: 5px;
+    height:50px;
+}
+
+.btdeletar {
+    border: none;
+    background-color: transparent;
+}
+
+#btlimpatabela {
+    border: none;
+    background-color: transparent;
+}
+
+.btdeletar:hover {
+   /* background-color:red; */
+    color:red;
+  }
+
+.naoaparece {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+#label {
+    display: flex;
+    width: 180px;
+    text-align: center;
+    margin: 0 auto;
+    height: 40px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+p {
+    margin: auto;
+    vertical-align: middle;
+}
+
+.fa-search{
+    cursor: pointer;
+}
+
+.fa-times {
+    color: white
+}
+
+/*     ADICIONEI          */
+
+.textopreto{
+    color: black
+}
+
+.btdialogo {
+    background-color:#ff9000; 
+    color: white;
+    font-weight: bold;
+    border-radius: 4px; 
+    border: none;
+    width: 100px
+}
+
+.btdialogo:hover {
+    color:white
+}
+
+.btcancela {
+    background-color: white;
+    color: black
+}

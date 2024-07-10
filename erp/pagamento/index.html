@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Lojas Lebes</title>
+        <meta charset="utf-8"/>
+        <script type="text/javascript" src="/bsweb/erp/etiqueta/bootstrap/js/jquery.js"></script> 
+        <script type="text/javascript" src="/bsweb/erp/etiqueta/bootstrap/js/jquery.mask.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="/bsweb/erp/etiqueta/bootstrap/css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="styles.css"/> 
+        <script type="text/javascript" src="/bsweb/erp/etiqueta/bootstrap/js/bootstrap.min.js"></script>
+        <link href='/bsweb/erp/etiqueta/css/Titillium_Web.css' rel='stylesheet'/>
+    </head>
+
+    <body>
+
+        <h1 style="text-align: center; margin-top: 10px;"> Imprime comprovante de pagamentos do dia</h1>
+        
+        <div id='row'>
+
+            <div id="inputcodigo">
+
+                <div>Digite o código do cliente</div>  
+
+                <input type="text" class="enter" placeholder="Código do cliente" id="texto"/>
+
+                <input type='button' value='Pesquisar Pagamentos' class='botao' id='btpesquisar' onclick="searchURL()"/>
+
+            </div>
+
+        </div> 
+
+        <span id='span'></span>
+
+        <script>
+
+            function searchURL(){
+
+                var codigo = document.getElementById('texto').value
+                var link = 'http://10.2.0.37:5555/invoke/SisAdmCom.servico.corona.pdf/extratoParcela?cliente=' + codigo
+
+                window.open(link,'_blank');
+            }
+
+        </script>
+
+    </body>

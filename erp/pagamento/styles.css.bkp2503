@@ -1,0 +1,33 @@
+body {
+    background-color: rgb(47, 177, 43);
+    color: white;
+    align-content: center;
+    align-self: center;
+    align-items: center;
+    font-family: 'Titillium Web', sans-serif;    
+}
+
+#row{
+    margin-top: 7%;
+}
+
+.botao {
+    background-color: #ff9000; /* laranjinha */
+    color: white;
+    font-weight: bold;
+    border-radius: 4px; 
+    border: none;
+    text-decoration:none;
+}
+
+#inputcodigo{
+    margin-left: 35%;
+    height: 20px;
+}
+
+#btpesquisar{
+    height:40px;
+    margin-right: 10%;
+    margin-left: 14px;
+
+}

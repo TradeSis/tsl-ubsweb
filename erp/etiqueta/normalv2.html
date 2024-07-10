@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TS Etiqueta</title>
+        <meta charset="utf-8"/>
+        <script type="text/javascript" src="bootstrap/js/jquery.js"></script>
+        <script type="text/javascript" src="bootstrap/js/jquery.mask.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+        <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="bootstrap/js/bootbox/bootbox.min.js"></script>
+        <link href='css/Titillium_Web.css' rel='stylesheet'/>
+        <link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
+        <script src="bootstrap/js/tabletojson.min.js" ></script>
+    </head>
+
+    <body>
+
+        <div id='partedecima' class="row">
+          <span>v2</span>
+            <input type="file" id='buscararquivo' data-options="prompt:'Escolher arquivo'" class="naoaparece">
+
+            <label for="buscararquivo" id='label' class="botao"><p>Importar de CSV</p></label>
+        
+
+            <H1> Moda </H1> 
+
+        </div>
+
+        <div class="row" id='row' >
+
+            <div  style='margin-right: 30px; max-width: 152px'>
+                <div style="z-index: 1">Produto</div>
+                <div class="row">
+                    <input type="text" class="enter" value="" id="inputproduto"/>
+                    <i class='fa fa-search' id='btpesquisa' style='font-size: 25px;'></i>
+                </div>
+                <span style="z-index: 2" id='prodnome'></span>
+                <br>
+                <span style="z-index: 3" id='inputgra'></span>
+            </div>
+
+            <div  style='margin-right: 30px;'>
+                <div style="z-index: 1">Quantidade</div>
+                <input type="number" class="enter" value="" id="inputqtt"/>
+            </div>
+
+            <div  style='width: 40px; margin-right: 30px;'>
+                <div style="z-index: 1">Tamanho</div>
+                <input type="text" class="enter" value="" id="inputtam" style='width: 40px;'/>
+            </div>
+
+            <div  style='margin-right: 30px;'>
+                <div style="z-index: 1">Ordem de Compra</div>
+                <input type="number" class="enter" value="" id="inputoc"/>
+            </div>
+
+            <input type="button" value="Registrar" onclick='registrar()' class='botao col-sm' id='btregistrar'/>
+
+        </div>
+
+        <div class="row" id='partedebaixo'>
+
+            <input type="button" value="Salvar" onclick="salvar()" class='col-sm botao' id='btsalvar'/>
+
+            <input type="button" value="Imprimir" onclick="preimprimir()" class='col-sm botao' />
+
+        </div>
+
+        <table id='tabela'>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Nome</th>
+                    <th>Quantidade</th>
+                    <th>Tamanho</th>
+                    <th>Preço</th>
+                    <th>Ordem de Compra</th>
+                    <th><button id='btlimpatabela' title='Deletar todos os registros'><i class='fa fa-times'></button></th>
+                </tr>
+            </thead>
+            <tbody id='corpodatabela'>
+            </tbody>
+        </table>
+
+        <script type="text/javascript">
+
+            // Registra na tabela manualmente
+            function registrar(){
+
+                var id = $('#inputproduto').val();
+                var qtt = $('#inputqtt').val();
+                var tam = $('#inputtam').val();
+                var oc = $('#inputoc').val();
+
+                if (id && qtt ){
+                    var tabela = document.getElementById('corpodatabela');
+
+                    var row = tabela.insertRow()
+                    var cel_id = row.insertCell(0)
+                    var cel_nome = row.insertCell(1)
+                    var cel_qtt = row.insertCell(2)
+                    var cel_tam = row.insertCell(3)
+                    var cel_preco = row.insertCell(4)
+                    var cel_oc = row.insertCell(5)
+                    var cel_del = row.insertCell(6)
+
+                    cel_id.innerHTML = id
+                    cel_qtt.innerHTML = qtt
+                    cel_tam.innerHTML = tam
+                    cel_oc.innerHTML = oc
+                    cel_del.innerHTML = "<button class='btdeletar'><i class='fa fa-trash'></button>"
+
+                    if($('#prodnome').html() == ''){
+                        cel_nome.innerHTML = pesquisaregistro(id)[0]
+                        cel_preco.innerHTML = pesquisaregistro(id)[1]
+                    }else{
+                        cel_nome.innerHTML = $('#prodnome').html()
+                        cel_preco.innerHTML = $('#inputgra').html().replace('R$','')
+                    }
+
+                    $('#inputproduto').val('');
+                    $('#inputqtt').val('');
+                    $('#inputtam').val('');
+                    $('#inputoc').val('');
+                    $('#prodnome').html('')
+                    $('#inputgra').html('')
+
+                    $('#inputproduto').select();
+
+                } else {
+                    alert('Preencha pelo menos os campos de "Produto" e "Quantidade"')
+                }
+            }
+
+            // Faz o tamanho ficar maiúsculo
+            $('#inputtam').focusout(function(){
+                $(this).val($(this).val().toUpperCase())
+            })
+
+            // Registra quando aperta "Enter"
+            var input = document.getElementById('inputoc');
+            input.addEventListener("keyup", function(event) {
+                if (event.keyCode === 13) {
+                    registrar();
+                }
+            });
+
+            // Importa arquivo de CSV
+            function importar(){
+                var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
+                $('#btlimpatabela').click();
+                if (regex.test($("#buscararquivo").val().toLowerCase())) {
+                    
+                    if (typeof (FileReader) != "undefined") {
+                        var reader = new FileReader();
+                        
+                     
+
+                        reader.onload = function (e) {
+                            var rows = e.target.result.split("\n");
+                           
+                            for (var i = 0; i < rows.length; i++) {
+                                var row = $("<tr />");
+                                var cells = rows[i].split(";");
+                                
+                             
+                                var id = ''
+                                if (cells.length > 1) {
+                                    for (var j = 0; j < cells.length; j++) {
+                                       
+                                        if (j == 0){
+                                            var cell = $("<td />");
+                                            id = cells[j]
+                                            cell.html(id);
+                                            row.append(cell);
+                                            var cell2 = $("<td />");
+                                            cell2.html(pesquisaregistro(id)[0]);
+                                            row.append(cell2);
+                                        }else if (j == 1){
+                                            var qtt = cells[j]
+                                            var cell3 = $("<td />");
+                                            cell3.html(qtt);
+                                            row.append(cell3);
+                                        }else if (j==2){
+                                            var tam = cells[j]
+                                            var cell4 = $("<td />")
+                                            cell4.html(tam)
+                                            row.append(cell4)
+                                            var cell5 = $('<td />')
+                                            cell5.html(pesquisaregistro(id)[1])
+                                            row.append(cell5)
+                                        }else if (j==3){
+                                            var oc = cells[j]
+                                            var cell6 = $("<td />")
+                                            cell6.html(oc)
+                                            row.append(cell6)
+                                        }
+                                    }
+                                    row.append('<td>'+"<button class='btdeletar'><i class='fa fa-trash'></button>"+'</td>')
+                                    $('#corpodatabela').append(row);
+                                }
+                            }
+                        }
+                        reader.readAsText($("#buscararquivo")[0].files[0]);
+                        
+                        $("#buscararquivo").val("");
+                        
+
+                    } else {
+                        alert("This browser does not support HTML5.");
+                    }
+                } else {
+                    alert("Please upload a valid CSV file.");
+                }
+            }
+
+            $(document).ready(function(){
+                $('#buscararquivo').change(function() {
+                    importar();
+                })
+            });
+
+            // Faz download da tabela
+            function salvar(){
+                var listadeprodutos = $('#tabela').tableToJSON({
+                                                                    ignoreColumns: [6],
+                                                                    ignoreRows: [0],
+                                                                    headings: ['codigo', 'nome', 'quantidade', 'tamanho', 'preco', 'ordem']
+                                                                })
+                var jason = '{"produtos":' + JSON.stringify(listadeprodutos) + '}'
+              // ok 13/07/2021   alert('JSON ENTRADA: '+JSON.stringify(jason));
+                $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/bsweb/api/etiqueta/geraarquivo",
+                       data:jason,
+
+                        contentType: "application/json; charset=UTF-8",
+                        success: function(data){
+                          var  aux = [];
+
+                          aux = data;
+
+                        //  alert('Data: '+JSON.stringify(data));
+                        //  alert('Result: '+JSON.stringify(data['result']));
+                          //alert('Resultado: '+JSON.stringify(aux));
+
+                            if (aux['result'][0]['status'] == 200){
+                                alert(aux['result'][0]['Mensagem'])
+                                $('#btlimpatabela').click()
+                            } else {
+                                alert("ERRO " +aux['result'][0]['status']+' '+aux['result'][0]['Mensagem'])
+                            }
+                        },
+                        error: function(e){
+                            alert('Erro: '+JSON.stringify(e));
+                        }
+                });
+            }
+
+            // Imprime
+            function imprimir(selecionada){
+
+                var listadeprodutos = $('#tabela').tableToJSON({
+                                                                    ignoreColumns: [6],
+                                                                    ignoreRows: [0],
+                                                                    headings: ['codigo', 'nome', 'quantidade', 'tamanho', 'preco', 'ordem']
+                                                                })
+                var impressoras = {"impressora":selecionada}
+
+                jsonImpressoras = {"impressoras":[],"produtos":listadeprodutos}
+
+                jsonImpressoras.impressoras.push(impressoras)
+
+                jsonImprimir  = {"imprimir":jsonImpressoras}
+
+                var jason = JSON.stringify(jsonImprimir)
+
+              //  alert(jason);
+
+                $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/bsweb/api/etiqueta/imprimir",
+                        data: jason,
+                        contentType: "application/json; charset=UTF-8",
+                        success: function(data){
+                          var  aux = [];
+
+                          aux = data ;
+
+
+
+                            if (aux['resultado'][0]['status'] == 200){
+                                alert(aux['resultado'][0]['Mensagem'])
+                                $('#btlimpatabela').click()
+                            } else {
+                                alert("ERRO " +aux['resultado'][0]['status']+' '+aux['resultado'][0]['Mensagem'])
+                            }
+                        },
+                        error: function(e){
+                            alert('Erro: '+JSON.stringify(e));
+                        }
+                });
+            }
+
+
+            // Deletar linha
+            $(document).on('click','.btdeletar',function() {
+                $(this).closest('tr').remove();
+            })
+
+            // Deletar todas as linhas
+            $('#btlimpatabela').click(function(){
+                $('#corpodatabela').html('')
+            })
+            // Busca informações a partir de json
+            $('#btpesquisa').click(function(){
+
+                var searchVal = $('#inputproduto').val();
+                res = pesquisaregistro(searchVal);
+                $('#prodnome').html(res[0])
+                $('#inputgra').html(res[1])
+            })
+            $('#inputproduto').keydown(function(e){
+                if(e.which == 9){
+
+                    var searchVal = $('#inputproduto').val();
+
+                    res = pesquisaregistro(searchVal);
+                    $('#prodnome').html(res[0])
+                    $('#inputgra').html(res[1])
+                }
+            })
+
+
+            function pesquisaregistro(prod){
+                var result = []
+                $.ajax({
+                    dataType: "json",
+                    url:"/bsweb/api/produto/"+prod,
+                  //  data:'produto='+prod,
+                    type: "GET",
+                    async: false,
+                    success: function (data) {
+
+//                        alert('dato: '+JSON.stringify(data));
+
+                      var  aux = [];
+
+                      aux = data['produto'] ;
+                      //alert('dato: '+JSON.stringify(aux));
+
+                        var lista = [aux['Nome'], aux['Preco']]
+
+                        result = lista
+
+                    },
+                    error: function(e) {
+                        alert('Erro: '+JSON.stringify(e));
+
+                        return ['Erro', 'Erro'];
+                    }
+                });
+                return result;
+            }
+
+            //             ADICIONEI      mudei tbm linhas 11 63 263
+
+            var lista_de_impressoras = []
+
+            $(document).ready(function(){      // aqui vai ta o ajax pra pegar as impressoras
+
+                    /*
+                lista_de_impressoras = [
+                    {
+                        text: 'Impressora 1',
+                        value: 'a1',
+                    },
+                    {
+                        text: 'Impressora 2',
+                        value: 'a2',
+                    },
+                    {
+                        text: 'Impressora 3',
+                        value: 'a3',
+                    }
+                ]
+                      */
+
+                var result = []
+
+                $.ajax({
+                    dataType: "json",
+                    url:"/bsweb/api/etiqueta/buscaimpressoras",
+                    type: "GET",
+                    contextType:"applicaton/json; charset=utf-8",
+                    async: false,
+                    success: function (data) {
+
+                  // ok 13/072021  alert(JSON.stringify(data))
+
+
+                        var  aux = []
+                        lista_de_impressoras = data['impressoras'] ;
+                        //alert(JSON.stringify(aux))
+
+                        conteudo = {"text":aux['nome'],"value":aux['endereco']}
+                        //alert(JSON.stringify(conteudo))
+
+                        var lista = [aux['nome'], aux['endereco']]
+
+                        result = lista
+
+                    },
+                    error: function(e) {
+                        alert('Erro: '+JSON.stringify(e));
+
+                        return ['Erro', 'Erro'];
+                    }
+                });
+
+                //alert(JSON.stringify(result));
+
+
+            });
+
+            function preimprimir(){
+
+
+                bootbox.prompt({
+                    title: "Para prosseguir selecione a impressora desejada",
+                    inputType: 'radio',
+                    className: 'textopreto',
+                    inputOptions: lista_de_impressoras,
+                    buttons: {
+                        confirm: {
+                            label: 'Imprimir',
+                            className: 'btdialogo'
+                        },
+                        cancel: {
+                            label: 'Cancelar',
+                            className: 'btcancela'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result === null) {
+                            // Prompt dismissed
+                        } else {
+                             //   var impressora = [];
+                             //   impressora.push(result)
+                            imprimir(result)
+                            $('#btlimpatabela').click()
+                        }
+                    }
+                });
+            }
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,132 @@
+<definitions name='WSAcordoService' targetNamespace='http://service.console.ppware.com.br/' xmlns='http://schemas.xmlsoap.org/wsdl/' xmlns:soap='http://schemas.xmlsoap.org/wsdl/soap/' xmlns:tns='http://service.console.ppware.com.br/' xmlns:xsd='http://www.w3.org/2001/XMLSchema'>
+ <types>
+  <xs:schema targetNamespace='http://service.console.ppware.com.br/' version='1.0' xmlns:tns='http://service.console.ppware.com.br/' xmlns:xs='http://www.w3.org/2001/XMLSchema'>
+   <xs:element name='consultaAcordo' type='tns:consultaAcordo'/>
+   <xs:element name='consultaAcordoResponse' type='tns:consultaAcordoResponse'/>
+   <xs:complexType name='consultaAcordo'>
+    <xs:sequence>
+     <xs:element minOccurs='0' name='cpfCnpj' type='xs:string'/>
+    </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name='consultaAcordoResponse'>
+    <xs:sequence>
+     <xs:element minOccurs='0' name='return' type='tns:wsMessageAcordo'/>
+    </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name='wsMessageAcordo'>
+    <xs:complexContent>
+     <xs:extension base='tns:wsMessage'>
+      <xs:sequence>
+       <xs:element maxOccurs='unbounded' minOccurs='0' name='acordoAgrHdrLista' nillable='true' type='tns:acordoAgrHdrDTO'/>
+      </xs:sequence>
+     </xs:extension>
+    </xs:complexContent>
+   </xs:complexType>
+   <xs:complexType name='wsMessage'>
+    <xs:sequence>
+     <xs:element name='wsCodigoRetorno' type='xs:int'/>
+     <xs:element minOccurs='0' name='wsException' type='xs:string'/>
+     <xs:element name='wsLinInfReg' type='xs:int'/>
+     <xs:element name='wsLinSupReg' type='xs:int'/>
+     <xs:element minOccurs='0' name='wsMensagemRetorno' type='xs:string'/>
+     <xs:element minOccurs='0' name='wsNomeMetodo' type='xs:string'/>
+     <xs:element minOccurs='0' name='wsNomeWebService' type='xs:string'/>
+     <xs:element name='wsQtdReg' type='xs:int'/>
+    </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name='acordoAgrHdrDTO'>
+    <xs:sequence>
+     <xs:element minOccurs='0' name='ahaccount' type='xs:string'/>
+     <xs:element minOccurs='0' name='ahacct' type='xs:string'/>
+     <xs:element minOccurs='0' name='ahacctg' type='xs:string'/>
+     <xs:element name='ahagagncy' type='xs:int'/>
+     <xs:element minOccurs='0' name='ahautcollid' type='xs:string'/>
+     <xs:element minOccurs='0' name='ahautdt' type='xs:string'/>
+     <xs:element name='ahbank' type='xs:int'/>
+     <xs:element name='ahbreak' type='xs:int'/>
+     <xs:element name='ahcndpaym' type='xs:int'/>
+     <xs:element name='ahcndpayn' type='xs:int'/>
+     <xs:element minOccurs='0' name='ahcollid' type='xs:string'/>
+     <xs:element name='ahcsinitnt' type='xs:int'/>
+     <xs:element minOccurs='0' name='ahcspernt' type='xs:string'/>
+     <xs:element minOccurs='0' name='ahcttype' type='xs:string'/>
+     <xs:element minOccurs='0' name='ahdt' type='xs:string'/>
+     <xs:element minOccurs='0' name='ahexcp' type='xs:string'/>
+     <xs:element minOccurs='0' name='ahfax' type='xs:string'/>
+     <xs:element minOccurs='0' name='ahflflvl' type='xs:decimal'/>
+     <xs:element minOccurs='0' name='ahfreq' type='xs:string'/>
+     <xs:element minOccurs='0' name='ahgrperty' type='xs:string'/>
+     <xs:element minOccurs='0' name='ahholder' type='xs:string'/>
+     <xs:element name='ahid' type='xs:int'/>
+     <xs:element minOccurs='0' name='ahlstcurbal' type='xs:decimal'/>
+     <xs:element name='ahlvl' type='xs:int'/>
+     <xs:element name='ahnumup' type='xs:int'/>
+     <xs:element minOccurs='0' name='ahpmttype' type='xs:string'/>
+     <xs:element name='ahprd' type='xs:int'/>
+     <xs:element minOccurs='0' name='ahpytype' type='xs:string'/>
+     <xs:element minOccurs='0' name='ahrate' type='xs:decimal'/>
+     <xs:element minOccurs='0' name='ahrate2' type='xs:decimal'/>
+     <xs:element minOccurs='0' name='ahregdt' type='xs:string'/>
+     <xs:element minOccurs='0' name='ahstatus' type='xs:string'/>
+     <xs:element minOccurs='0' name='ahtotpmt' type='xs:decimal'/>
+     <xs:element minOccurs='0' name='ahtype' type='xs:string'/>
+     <xs:element maxOccurs='unbounded' minOccurs='0' name='contratos' nillable='true' type='tns:acordoAgrDmDTO'/>
+     <xs:element maxOccurs='unbounded' minOccurs='0' name='paymentSchedules' nillable='true' type='tns:acordoAgpmtDetDTO'/>
+    </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name='acordoAgrDmDTO'>
+    <xs:sequence>
+     <xs:element minOccurs='0' name='adacct' type='xs:string'/>
+     <xs:element minOccurs='0' name='adacctg' type='xs:string'/>
+     <xs:element name='adahid' type='xs:int'/>
+    </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name='acordoAgpmtDetDTO'>
+    <xs:sequence>
+     <xs:element name='apahid' type='xs:int'/>
+     <xs:element minOccurs='0' name='apamt' type='xs:decimal'/>
+     <xs:element minOccurs='0' name='apamtpay' type='xs:decimal'/>
+     <xs:element minOccurs='0' name='apamzamt' type='xs:decimal'/>
+     <xs:element minOccurs='0' name='apblnc' type='xs:decimal'/>
+     <xs:element name='apdetid' type='xs:int'/>
+     <xs:element minOccurs='0' name='apduedt' type='xs:string'/>
+     <xs:element minOccurs='0' name='apflag' type='xs:string'/>
+     <xs:element minOccurs='0' name='apflag2' type='xs:string'/>
+     <xs:element minOccurs='0' name='apindate' type='xs:string'/>
+     <xs:element minOccurs='0' name='apinsamt' type='xs:decimal'/>
+     <xs:element minOccurs='0' name='apintamt' type='xs:decimal'/>
+     <xs:element minOccurs='0' name='apinttaxamt' type='xs:decimal'/>
+    </xs:sequence>
+   </xs:complexType>
+  </xs:schema>
+ </types>
+ <message name='WSAcordo_consultaAcordoResponse'>
+  <part element='tns:consultaAcordoResponse' name='consultaAcordoResponse'></part>
+ </message>
+ <message name='WSAcordo_consultaAcordo'>
+  <part element='tns:consultaAcordo' name='consultaAcordo'></part>
+ </message>
+ <portType name='WSAcordo'>
+  <operation name='consultaAcordo' parameterOrder='consultaAcordo'>
+   <input message='tns:WSAcordo_consultaAcordo'></input>
+   <output message='tns:WSAcordo_consultaAcordoResponse'></output>
+  </operation>
+ </portType>
+ <binding name='WSAcordoBinding' type='tns:WSAcordo'>
+  <soap:binding style='document' transport='http://schemas.xmlsoap.org/soap/http'/>
+  <operation name='consultaAcordo'>
+   <soap:operation soapAction=''/>
+   <input>
+    <soap:body use='literal'/>
+   </input>
+   <output>
+    <soap:body use='literal'/>
+   </output>
+  </operation>
+ </binding>
+ <service name='WSAcordoService'>
+  <port binding='tns:WSAcordoBinding' name='WSAcordoPort'>
+   <soap:address location='http://187.0.217.242:8080/conppwPadrao-war/WSAcordo'/>
+  </port>
+ </service>
+</definitions>
