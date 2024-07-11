@@ -1,0 +1,28 @@
+-T /tmp
+-d dmy
+-h 50
+-inp 32000
+-s 200
+-TB 31 
+-TM 32
+
+-numsep 44
+-numdec 46
+
+#-db /dados/bases/ger 
+#-db /dados/bases/com 
+#-db /dados/bases/fin 
+#-db /dados/bases/suporte 
+#-db /dados/bases/adm 
+#-db /dados/bases/nfe 
+
+#-db /dados/bases/itim
+#-db /dados/bases/cyber
+
+-db ger     -N tcp -S sdrebger -H 10.2.0.44
+-db com     -N tcp -S sdrebcom -H 10.2.0.44
+-db fin     -N tcp -S sdrebfin -H 10.2.0.44
+-db suporte -N tcp -S sdrebsup -H 10.2.0.44
+-db adm     -N tcp -S sadm     -H 10.2.0.44
+-db nfe     -N tcp -S sdrebnfe -H 10.2.0.44
+-db crm     -N tcp -S sdrebcrm -H 10.2.0.44
