@@ -20,7 +20,7 @@ fwrite($arquivo, $log_datahora_ini . "$acao" . "-NOVO_TOKEN->" . $novo_token. "\
 if ($novo_token == "sim") {
 
     if ($hml == true) {
-        $service_url = 'http://lebes-hml.k8s.lebes.com.br/auth/connect/token';
+        $service_url = 'http://lebes-hml-2.k8s.lebes.com.br/auth/connect/token';
         $client_secret = "5fb7c802-9b5a-46a8-b022-cec03327a7e9";
     } else {
         $service_url = 'http://lebes-prod.k8s.lebes.com.br/auth/connect/token';
@@ -54,7 +54,7 @@ fwrite($arquivo, $log_datahora_ini . "$acao" . "-sccess_token->" . json_encode($
 
 
 if ($hml == true) {
-    $service_url = 'http://lebes-hml.k8s.lebes.com.br/planos/Planos/01/000001';
+    $service_url = 'http://lebes-hml-2.k8s.lebes.com.br/planos/Planos/01/000001';
 } else {
     $service_url = 'http://lebes-prod.k8s.lebes.com.br/planos/Planos/01/000001';
 
