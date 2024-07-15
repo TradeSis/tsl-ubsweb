@@ -59,7 +59,8 @@ for each medprodu no-lock.
             int(ttentrada.codigofilial) = 55 or
             int(ttentrada.codigofilial) = 97 or
             int(ttentrada.codigofilial) = 77 or
-            int(ttentrada.codigofilial) = 188
+            int(ttentrada.codigofilial) = 188 or
+            int(ttentrada.codigofilial) = 13
         then.
         else next.
     end.            
