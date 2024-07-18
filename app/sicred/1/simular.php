@@ -30,7 +30,7 @@ fwrite($arquivo,$log_datahora_ini."$acao"."-ENTRADA->".json_encode($jsonEntrada)
     
 
 /*
-   curl --location --request POST 'http://lebes-hml.k8s.lebes.com.br/auth/connect/token' \
+   curl --location --request POST 'http://lebes-hml-2.k8s.lebes.com.br/auth/connect/token' \
    --header 'Content-Type: application/x-www-form-urlencoded' \
    --data-urlencode 'grant_type=password' \
    --data-urlencode 'username=BARRAMENTO' \
@@ -47,7 +47,7 @@ fwrite($arquivo,$log_datahora_ini."$acao"."-ENTRADA->".json_encode($jsonEntrada)
   if ($novo_token == "sim") {
         
           if ($hml==true) {
-            $service_url = 'http://lebes-hml.k8s.lebes.com.br/auth/connect/token';
+            $service_url = 'http://lebes-hml-2.k8s.lebes.com.br/auth/connect/token';
             $client_secret="5fb7c802-9b5a-46a8-b022-cec03327a7e9";
           } else {
             $service_url = 'http://lebes-prod.k8s.lebes.com.br/auth/connect/token';
@@ -113,7 +113,7 @@ fwrite($arquivo,$log_datahora_ini."$acao"."-ENTRADA->".json_encode($jsonEntrada)
     
         
     if ($hml==true) {
-         $service_url = 'http://lebes-hml.k8s.lebes.com.br/simulacao/api/Simulacao/Calculadora';
+         $service_url = 'http://lebes-hml-2.k8s.lebes.com.br/simulacao/api/Simulacao/Calculadora';
     } else {
       $service_url = 'http://lebes-prod.k8s.lebes.com.br/simulacao/api/Simulacao/Calculadora';
 
