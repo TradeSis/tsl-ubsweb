@@ -54,14 +54,7 @@ for each medprodu no-lock.
         .   São Francisco de Paula 97
         .   Tramandaí 77
         */
-        if  int(ttentrada.codigofilial) = 122 or
-            int(ttentrada.codigofilial) = 24  or
-            int(ttentrada.codigofilial) = 55 or
-            int(ttentrada.codigofilial) = 97 or
-            int(ttentrada.codigofilial) = 77 or
-            int(ttentrada.codigofilial) = 188
-        then.
-        else next.
+        /* 15072024 - retirado o testo - agora eh todas as lojas */
     end.            
             
     create ttmedprodu.
