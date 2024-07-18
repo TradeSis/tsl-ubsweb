@@ -653,6 +653,12 @@ then do.
             vneurotech = yes.
 
 
+    /* helio 190324 - aqssinatura digital */
+    if verificacreditovenda.ID_BIOMETRIA <> ? and verificacreditovenda.ID_BIOMETRIA <> ""
+    then do:
+        run log("GUARDA Biometria = " + string(clien.clicod) + " " + verificacreditovenda.ID_BIOMETRIA).
+        run crd/biometriaguarda.p (clien.clicod, verificacreditovenda.ID_BIOMETRIA)..
+    end.
 
     /* #1 LOG PARA PRIMEIRA AVALIACAO SUBMETE */
     vchar = if vneu_cdoperacao = ""
@@ -740,6 +746,13 @@ then do.
             /* helio #23112022 ID 154675 */
             var-DTULTPAGTO = date(pega_prop("DTULTPAGTO")).
             /**/
+                /* PROP_DTULTCPA */     var-dtultcpa = pega_prop("DTULTCPA"). /* #11 */
+                if var-dtultcpa = ? then var-dtultcpa = "".         
+            
+                /* PROP_DTULTNOV */     var-dtultnov = pega_prop("DTULTNOV"). /* #11 */
+                if var-dtultnov = ? then var-dtultnov = "".         
+            var-QTDENOV = pega_prop("QTDENOV").
+            if var-QTDENOV = ? then var-QTDENOV = "".         
 
             find cpclien where cpclien.clicod = clien.clicod no-lock no-error.
             vrenda          = if clien.prorenda[1] = ?
@@ -902,6 +915,11 @@ then do.
                    + "&PROP_ATRASOPARCPERC=" + removeacento(var-atrasoparcperc)
                    + "&PROP_ATRASOATUAL="    + string(var-atrasoatual) /* #4 */
                    + "&PROP_SALDOTOTNOV="    + string(var-saldototnov) /* #4 */
+
+                    + "&PROP_DTULTCPA="     + var-dtultcpa /* #11 */
+                    + "&PROP_DTULTNOV="     + var-dtultnov /* #11 */
+                + "&PROP_QTDENOV=" + (if var-QTDENOV = ? then ""  else string(var-QTDENOV))
+                   
                    + "&PROP_COMPROMETIMENTO_MENSAL="  + trim(string(var-COMPROMETIMENTO_MENSAL,"->>>>>>>>>>>>>>>>>>>>>>>>9.99"))  /* helio 11042022 - ajuste painel m~~otor */
                    /* helio #23112022 ID 154675 */
                     + "&PROP_DTULTPAGTO=" + (if var-DTULTPAGTO = ? then "" 
