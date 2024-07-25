@@ -64,7 +64,9 @@ vsaida = "./json/"
 hinsertepEntrada:WRITE-JSON("FILE",vsaida, true).
 **/
 
-    
+for each ttinsertep.
+
+end.    
 if verro <> ""
 then do:
   create ttsaida.
