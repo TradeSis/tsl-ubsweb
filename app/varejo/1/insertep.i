@@ -22,23 +22,6 @@ DEFINE TEMP-TABLE ttinsertEP NO-UNDO SERIALIZE-NAME "insertEP"
         field   codigoOperador as char
     index x is unique primary id asc. 
 
-DEFINE TEMP-TABLE ttparcelasRenegociadas NO-UNDO SERIALIZE-NAME "parcelasRenegociadas"
-        field id as char
-        field   idPai as char
-        field   cpfCnpjCliente as char
-        field   codigoCliente as char
-        field   numeroContrato as char
-        field   modalidadeContrato as char
-        field   carteiraContrato as char
-        field   seqParcela as char
-        field   dataVencimentoParcela as char
-        field   dataPagamentoParcela as char
-        field   valorParcela as char
-        field   valorEncargoAtraso as char
-        field   valorDispensaJuros as char
-        field   valorPago as char
-        field   pagtoParcial as char
-    index x is unique primary idpai asc id asc. 
 
 DEFINE TEMP-TABLE ttrecebimentos NO-UNDO SERIALIZE-NAME "recebimentos"
         field chave as char initial ? serialize-hidden
@@ -60,6 +43,7 @@ DEFINE TEMP-TABLE ttcontrato NO-UNDO SERIALIZE-NAME "contrato"
         field id as char 
         field idPai as char 
         field codigoLoja as char 
+        field codigoCliente as char 
         field numeroContrato as char 
         field dataInicial as char 
         field valorTotal as char 
@@ -223,10 +207,9 @@ index x is unique primary idpai asc id asc.
 
 
 
-DEFINE DATASET insertEPEntrada FOR ttinsertEP, ttparcelasRenegociadas,
+DEFINE DATASET insertEPEntrada FOR ttinsertEP,
 ttrecebimentos , ttcartaoLebes, ttcontrato, ttparcelas, /*ttseguro*/ ttcartaoPresente, ttcartaoDebito, ttvaleTrocaGarantida, ttcartaoCredito, ttvaleTroca, ttcheque
     , ttpixdebito
-   DATA-RELATION for0 FOR ttinsertEP, ttparcelasRenegociadas      RELATION-FIELDS(ttinsertEP.id,ttparcelasRenegociadas.idpai) NESTED
 
   DATA-RELATION for4 FOR ttinsertEP, ttrecebimentos  RELATION-FIELDS(ttinsertEP.id,ttrecebimentos.idpai) NESTED
 
