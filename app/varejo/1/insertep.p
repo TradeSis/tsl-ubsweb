@@ -141,6 +141,24 @@ for each ttinsertep.
     
     vseqreg = 0.
 
+    
+    vseqreg = vseqreg + 1.
+    
+    find first pdvdoc of pdvmov where pdvdoc.seqreg = vseqreg no-error.
+    if not avail pdvdoc
+    then do:
+        create pdvdoc.
+        assign 
+            pdvdoc.etbcod    = pdvmov.etbcod
+            pdvdoc.DataMov   = pdvmov.DataMov
+            pdvdoc.cmocod    = pdvmov.cmocod
+            pdvdoc.COO       = pdvmov.COO
+            pdvdoc.Sequencia = pdvmov.Sequencia
+            pdvdoc.ctmcod    = pdvmov.ctmcod
+            pdvdoc.seqreg    = vseqreg
+            /*pdvdoc.titcod    = ?*/ .
+    end.  
+
 
     /* RECEBIMENTOS */
     

@@ -147,7 +147,9 @@ def var valteraprincipal as log.
               contrato.crecod        = pdvforma.fincod.
               contrato.vltaxa        = dec(ttcontrato.valorTFC).
               val_tfc = dec(ttcontrato.valorTFC).
-              contrato.modcod        = pdvforma.modcod /*ttcontrato.modalidade*/ .
+              contrato.modcod        = if ttcontrato.modalidade = "" 
+                                          then pdvforma.modcod 
+                                          else ttcontrato.modalidade.
               contrato.DtEfetiva     = aaaa-mm-dd_todate(ttcontrato.dataEfetivacao).
               contrato.dtinicial    = contrato.DtEfetiva. /* helio 190224 */
               contrato.VlIof         = dec(ttcontrato.valorIof).
