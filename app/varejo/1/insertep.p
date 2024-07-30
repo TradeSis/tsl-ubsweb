@@ -162,7 +162,7 @@ for each ttinsertep.
 
     /* RECEBIMENTOS */
     
-    {varejo/1/recebimentos.i ttinsertep.id}
+    {varejo/1/inserteprecebimentos.i ttinsertep.id}
     
 end.
 
