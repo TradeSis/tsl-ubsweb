@@ -91,6 +91,36 @@ for each ttinsertep.
                           "Cx " + string(cmon.cxacod). 
     end.
 
+    verro = "".
+    for each ttrecebimentos where ttrecebimentos.idpai = ttinsertep.id.
+        for each ttcontrato where ttcontrato.id = ttrecebimentos.id.
+            find contrato where contrato.contnum  = int(ttcontrato.numeroContrato) no-lock no-error.
+            if avail contrato
+            then do:
+                verro = "CONTRATO JA CADASTRADO ANTERIORMENTE " + ttcontrato.numeroContrato.
+                leave.
+            end.
+            find clien where clien.clicod = int(ttcontrato.codigoCliente) NO-LOCK no-error.
+            if not avail clien
+            then do:
+                verro = "CLIENTE NAO CADASTRADO " + ttcontrato.codigoCliente.
+                leave.
+            end.
+
+        end.
+    end.
+    if verro <> ""
+    then do:
+        create ttsaida.
+        ttsaida.tstatus = 400.
+        ttsaida.descricaoStatus = verro.
+        hsaida  = temp-table ttsaida:handle.
+        lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+        message string(vlcSaida).
+
+        return.
+    end.
+
     do on error undo:
     find first pdvmov where
         pdvmov.etbcod = cmon.etbcod and
@@ -178,6 +208,7 @@ end.
   hsaida  = temp-table ttsaida:handle.
   lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
   message string(vlcSaida).
+
 
 
 
