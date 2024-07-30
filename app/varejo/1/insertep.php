@@ -5,7 +5,7 @@ $log_datahora_ini = date("dmYHis");
 $acao="insertEP";  
 $mypid = getmypid();
 $identificacao=$log_datahora_ini."-PID".$mypid."-"."$acao";
-$arqlog = "/ws/log/apivarejo_insertEP_".$acao."_".date("dmY").".log";
+$arqlog = "/ws/log/apivarejo_".$acao."_".date("dmY").".log";
 $arquivo = fopen($arqlog,"a");
 function isJson($string) {
   json_decode($string);
