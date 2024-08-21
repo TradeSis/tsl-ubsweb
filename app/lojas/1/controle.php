@@ -12,7 +12,7 @@ $explode = explode("/",$funcao);
 if ($explode[0]) {
   $funcao = $explode[0];
 }
-if ($explode[1]) {
+if (isset($explode[1])) {
   $parametro2 = $explode[1];
 }
 /*if ($explode[2]) {
