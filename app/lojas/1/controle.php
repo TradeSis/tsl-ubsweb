@@ -79,6 +79,9 @@ if ($metodo=="GET"){
     case "cotasPlanoUtiliza":
       include 'cotasPlanoUtiliza.php';
     break; 
+    case "cotasPlanoSupUtiliza":
+      include 'cotasPlanoSupUtiliza.php';
+    break; 
     case "previsaoEntrega":
       include 'previsaoEntrega.php';
     break; 

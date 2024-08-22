@@ -29,7 +29,12 @@ def temp-table ttfincotaetb serialize-name "return"
     field cotaslib      as int
     field cotasuso      as int    
     field planobloqueio   as char /* 0= liberado / 1 = Bloqueio / 2= senha gerente */
-    field mensagem   as char.
+    field mensagem   as char
+    field supcod     as int
+    field supnom     as char
+    field cotassuplib      as int
+    field cotassupuso      as int
+    field idtoken    as int.
 
 def temp-table ttsaida  no-undo serialize-name "conteudoSaida"
     field tstatus        as int serialize-name "status"
@@ -178,6 +183,56 @@ end.
 
 ttfincotaetb.planobloqueio = vplanobloqueio.
 ttfincotaetb.mensagem      = vmensagem.
+
+if avail fincotaclplan
+then do: 
+        find fincotacluster of fincotaclplan no-lock. 
+        find estab WHERE estab.etbcod = int(ttentrada.codigoFilial) no-lock.
+        find supervisor of estab no-lock.
+      
+        find fincotasuplib  where 
+                fincotasuplib.fcccod = fincotacluster.fcccod and  
+                fincotasuplib.supcod = estab.supcod and 
+                fincotasuplib.dtivig <= today and
+               (fincotasuplib.dtfvig >= today or 
+                fincotasuplib.dtfvig = ?) 
+                     no-lock no-error.          
+        if avail fincotasuplib
+        then do:              
+            ttfincotaetb.cotassupuso = 0.
+            for each fincotaclplan of fincotacluster no-lock.
+                for each fincotasup where 
+                    fincotasup.supcod = supervisor.supcod and
+                    fincotasup.etbcod = estab.etbcod and
+                    fincotasup.fincod = fincotaclplan.fincod and
+                    fincotasup.dtivig = fincotasuplib.dtivig and
+                    fincotasup.dtfvig = fincotasuplib.dtfvig 
+                    no-lock.
+                    ttfincotaetb.cotassupuso = ttfincotaetb.cotassupuso + fincotasup.cotasuso.
+                end.
+            end.              
+            ttfincotaetb.dtivig       = fincotasuplib.dtivig.
+            ttfincotaetb.dtfvig       = fincotasuplib.dtfvig.
+            ttfincotaetb.cotassuplib     = fincotasuplib.cotaslib.
+            ttfincotaetb.supcod     = supervisor.supcod.
+            ttfincotaetb.supnom     = supervisor.supnom.
+            ttfincotaetb.idtoken     = 0.
+
+            if ttfincotaetb.cotassupuso + 1 > fincotasuplib.cotaslib
+            then do:
+                vplanobloqueio = "1".
+                vmensagem = "Plano bloqueado por politica de cotas, cluster " + fincotacluster.fccnom + "!".
+            end.
+            else do:
+               vplanobloqueio = "2".
+               vmensagem = "Restam " + string(fincotasuplib.cotaslib - ttfincotaetb.cotassupuso) + 
+                " cotas disponiveis no cluster " + fincotacluster.fccnom + " " +
+                chr(10) + " Solicite ao gerente autorizar por senha.".
+            end.
+            
+        end.
+            
+end. 
 
 hSaida = temp-table ttfincotaetb:HANDLE.
 
