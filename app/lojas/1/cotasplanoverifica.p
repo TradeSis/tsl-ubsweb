@@ -34,7 +34,7 @@ def temp-table ttfincotaetb serialize-name "return"
     field supnom     as char
     field cotassuplib      as int
     field cotassupuso      as int
-    field idtoken    as int.
+    field idtoken    AS CHAR.
 
 def temp-table ttsaida  no-undo serialize-name "conteudoSaida"
     field tstatus        as int serialize-name "status"
@@ -216,7 +216,7 @@ then do:
             ttfincotaetb.cotassuplib     = fincotasuplib.cotaslib.
             ttfincotaetb.supcod     = supervisor.supcod.
             ttfincotaetb.supnom     = supervisor.supnom.
-            ttfincotaetb.idtoken     = 0.
+            ttfincotaetb.idtoken     = "".
 
             if ttfincotaetb.cotassupuso + 1 > fincotasuplib.cotaslib
             then do:
@@ -233,6 +233,7 @@ then do:
         end.
             
 end. 
+
 
 hSaida = temp-table ttfincotaetb:HANDLE.
 
