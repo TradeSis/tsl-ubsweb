@@ -91,7 +91,7 @@ then do:
   create ttsaida.
   ttsaida.tstatus = if locked finan then 500 else 404.
   ttsaida.descricaoStatus = "plano " + string(ttentrada.codigoPlano) 
-                 + " NÃ£o encontrado.".
+                 + " Não encontrado.".
 
   hsaida  = temp-table ttsaida:handle.
 
@@ -104,6 +104,8 @@ find first ttentrada.
 
 vplanobloqueio = "0".
 vmensagem = "".
+find estab WHERE estab.etbcod = int(ttentrada.codigoFilial) no-lock.
+FIND supervisor OF estab NO-LOCK NO-ERROR.
 
 create ttfincotaetb.
 ttfincotaetb.codigoFilial = ttentrada.codigoFilial.
@@ -124,7 +126,6 @@ then do:
         if avail fincotacllib
         then do:              
             ttfincotaetb.cotasuso = 0.
-            for each fincotaclplan of fincotacluster no-lock.
                 for each fincotaetb where 
                     fincotaetb.etbcod = fincotacllib.etbcod and
                     fincotaetb.fincod = fincotaclplan.fincod and
@@ -133,7 +134,6 @@ then do:
                     no-lock.
                     ttfincotaetb.cotasuso = ttfincotaetb.cotasuso + fincotaetb.cotasuso.
                 end.
-            end.              
             ttfincotaetb.dtivig       = fincotacllib.dtivig.
             ttfincotaetb.dtfvig       = fincotacllib.dtfvig.
             ttfincotaetb.cotaslib     = fincotacllib.cotaslib.
@@ -181,15 +181,11 @@ else do:
     end.        
 end.
 
-ttfincotaetb.planobloqueio = vplanobloqueio.
-ttfincotaetb.mensagem      = vmensagem.
 
 if avail fincotaclplan
 then do: 
         find fincotacluster of fincotaclplan no-lock. 
-        find estab WHERE estab.etbcod = int(ttentrada.codigoFilial) no-lock.
-        find supervisor of estab no-lock.
-      
+
         find fincotasuplib  where 
                 fincotasuplib.fcccod = fincotacluster.fcccod and  
                 fincotasuplib.supcod = estab.supcod and 
@@ -200,9 +196,8 @@ then do:
         if avail fincotasuplib
         then do:              
             ttfincotaetb.cotassupuso = 0.
-            for each fincotaclplan of fincotacluster no-lock.
                 for each fincotasup where 
-                    fincotasup.supcod = supervisor.supcod and
+                    fincotasup.supcod = estab.supcod and
                     fincotasup.etbcod = estab.etbcod and
                     fincotasup.fincod = fincotaclplan.fincod and
                     fincotasup.dtivig = fincotasuplib.dtivig and
@@ -210,29 +205,20 @@ then do:
                     no-lock.
                     ttfincotaetb.cotassupuso = ttfincotaetb.cotassupuso + fincotasup.cotasuso.
                 end.
-            end.              
-            ttfincotaetb.dtivig       = fincotasuplib.dtivig.
-            ttfincotaetb.dtfvig       = fincotasuplib.dtfvig.
             ttfincotaetb.cotassuplib     = fincotasuplib.cotaslib.
-            ttfincotaetb.supcod     = supervisor.supcod.
-            ttfincotaetb.supnom     = supervisor.supnom.
-            ttfincotaetb.idtoken     = "".
-
-            if ttfincotaetb.cotassupuso + 1 > fincotasuplib.cotaslib
+            ttfincotaetb.supcod     = estab.supcod.
+            ttfincotaetb.supnom     = IF AVAIL supervisor THEN removeacento(supervisor.supnom) ELSE "".
+            ttfincotaetb.idtoken    = IF AVAIL supervisor THEN supervisor.idtoken ELSE "".
+            if ttfincotaetb.cotassuplib > ttfincotaetb.cotassupuso
             then do:
-                vplanobloqueio = "1".
-                vmensagem = "Plano bloqueado por politica de cotas, cluster " + fincotacluster.fccnom + "!".
+                vmensagem = vmensagem + chr(10) + " Deseja utilizar cotas do Regional " + ttfincotaetb.supnom  + "?".
             end.
-            else do:
-               vplanobloqueio = "2".
-               vmensagem = "Restam " + string(fincotasuplib.cotaslib - ttfincotaetb.cotassupuso) + 
-                " cotas disponiveis no cluster " + fincotacluster.fccnom + " " +
-                chr(10) + " Solicite ao gerente autorizar por senha.".
-            end.
-            
+
         end.
             
 end. 
+ttfincotaetb.planobloqueio = vplanobloqueio.
+ttfincotaetb.mensagem      = vmensagem.
 
 
 hSaida = temp-table ttfincotaetb:HANDLE.
@@ -253,3 +239,4 @@ else do:
     message string(vlcSaida).
     return.
 end.
+
