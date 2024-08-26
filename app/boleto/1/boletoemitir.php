@@ -41,7 +41,7 @@ function isJson($string) {
   if ($hml==true) {$service_url = 'http://10.2.0.133:5555/gateway/lb-banrisul-boletos/1.0/cobranca/11271860000186/boletos/emite-boleto-simplificado'; } 
              else {$service_url = 'http://10.2.0.133:5555/gateway/lb-banrisul-boletos/1.0/cobranca/11271860000186/boletos/emite-boleto-simplificado';
 }
- fwrite($arquivo,$log_datahora_ini."$acao"."-HML->".$hml."\n");
+ fwrite($arquivo,$log_datahora_ini."$acao"."-HML->".json_encode($hml)."\n");
  fwrite($arquivo,$log_datahora_ini."$acao"."-service_url->".$service_url."\n");
  $curl = curl_init($service_url);
  curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
@@ -60,7 +60,7 @@ function isJson($string) {
 
  curl_close($curl); // close cURL handler
 
-
+/*
  $curl_response = '{
   "retorno": "02",
   "titulo": {
@@ -139,12 +139,12 @@ function isJson($string) {
     "operacoes": null
   }
 }';
+*/
  $result = json_decode($curl_response, true);
  fwrite($arquivo,$log_datahora_ini."$acao"."-SAIDA->".json_encode($result)."\n");
     
 
-    //if ($info['http_code']==201) {
-    if (1==1) {
+    if ($info['http_code']==201) {
         /* TRANSFORMA EM MODELO PROGRESS */
         $Entrada = (object) $result;
         $jsonEntradaTitulo = isset($Entrada->titulo) ? (object) $Entrada->titulo : null;

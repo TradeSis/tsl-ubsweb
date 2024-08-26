@@ -21,15 +21,6 @@ if (!isset($funcao)) {
     $parametro=null;
   }
   
-  if ($parametro=="boletagem") {
-    $funcao=$parametro;
-    $parametro=null;
-  }
-  if ($parametro=="boletagemv2") {
-    $funcao=$parametro;
-    $parametro=null;
-  }
-  
 }
 //echo "funcao=".$funcao;
 switch ($funcao) {
