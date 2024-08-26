@@ -14,7 +14,6 @@ function isJson($string) {
     $jsonEntradaTitulo = isset($jsonEntrada->titulo[0]) ? (object) $jsonEntrada->titulo[0] : null;
     $jsonEntradaPagador = isset($jsonEntrada->pagador[0]) ? (object) $jsonEntrada->pagador[0] : null;
 
-
     $conteudoFormatado= json_encode(
                               array("titulo"  => array(
                                         "nosso_numero" => $jsonEntradaTitulo->nosso_numero,
@@ -33,7 +32,7 @@ function isJson($string) {
                                             "uf" => $jsonEntradaPagador->uf
                                         ),
                                     ),
-                                    "mensagens"  => $jsonEntrada->mensagens ?? [],
+                                    "mensagens"  => $jsonEntrada->mensagens ,
                                   )
                                 );
 

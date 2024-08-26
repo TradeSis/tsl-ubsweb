@@ -1,4 +1,7 @@
 <?php
+//echo "funcao=".$funcao."\n";
+//echo "parametro=".$parametro."\n";
+
 
 if (!isset($funcao)) {
   if ($parametro=="nossoNumero") {
@@ -13,6 +16,11 @@ if (!isset($funcao)) {
     $funcao=$parametro;
     $parametro=null;
   }
+  if ($parametro=="boletoemitir") {
+    $funcao=$parametro;
+    $parametro=null;
+  }
+  
   if ($parametro=="boletagem") {
     $funcao=$parametro;
     $parametro=null;
@@ -23,7 +31,7 @@ if (!isset($funcao)) {
   }
   
 }
-
+//echo "funcao=".$funcao;
 switch ($funcao) {
    case "nossoNumero":
       if (isset($jsonEntrada)){
@@ -55,6 +63,17 @@ switch ($funcao) {
             ), TRUE);
        }
   break;
+   case "boletoemitir":
+      if (isset($jsonEntrada)){
+         include 'boletoemitir.php';
+       } else {
+         $jsonSaida = json_decode(json_encode(
+          array("erro" => "400",
+              "retorno" => "conteudo JSON vazio 1")
+            ), TRUE);
+       }
+  break;
+  
   case "boletagem":
       if (isset($jsonEntrada)){
          include 'boletagem.php';
