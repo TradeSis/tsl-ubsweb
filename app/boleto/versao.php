@@ -1,10 +1,7 @@
 <?php
-
-
 include "config.php";
 
 if ($versao==""){$versao="1";}
-
 if ($metodo=="POST") {
 
       switch ($versao) {
@@ -25,3 +22,4 @@ if ($metodo=="POST") {
           "retorno" => "Aplicacao " . $aplicacao . " Metodo ".$metodo." Invalido")
         ), TRUE);
 }
+?>
