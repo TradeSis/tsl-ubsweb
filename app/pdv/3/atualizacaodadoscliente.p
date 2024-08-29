@@ -205,7 +205,9 @@ field genero as char /*– 3 opções de valor: Masculino | Feminino | Prefiro n
 
 field falecido as char /*– true/false*/
 field inscricaoEstadual as char
-field ID_BIOMETRIA as char.
+field ID_BIOMETRIA as char
+field atendimento_remoto as char. /* heloi 29082024 - proj inteligencia biometria */
+
 
 hentrada = temp-table AtualizacaoDadosCliente:HANDLE.
 
@@ -1342,8 +1344,8 @@ then do:
         end.
 
         
-        run log("ID_BIOMETRIA " + texto(AtualizacaoDadosCliente.ID_BIOMETRIA)).
-
+        run log("ID_BIOMETRIA " + texto(AtualizacaoDadosCliente.ID_BIOMETRIA) +
+                " atendimento_remoto " + texto(AtualizacaoDadosCliente.atendimento_remoto)).
 
         vchar = if vprocessa_credito
                 then "Politica " + vpolitica +
@@ -1730,7 +1732,7 @@ then do:
                                  else string(clien.ultimaAtualizacaoCadastral,"99/99/9999"))     
                        + "&PROP_GENERO=" + texto(clien.genero)   
                        + "&PROP_ID_BIOMETRIA=" + trim(texto(AtualizacaoDadosCliente.ID_BIOMETRIA))   
-
+                       + "&PROP_ATENDIMENTO_REMOTO=" + trim(texto(AtualizacaoDadosCliente.atendimento_remoto))   
                        + "&PROP_FLXPOLITICA="    + vPOLITICA.
                 
                 end.
@@ -1839,7 +1841,7 @@ then do:
                                  else string(clien.ultimaAtualizacaoCadastral,"99/99/9999"))     
                        + "&PROP_GENERO=" + texto(clien.genero)   
                        + "&PROP_ID_BIOMETRIA=" + trim(texto(AtualizacaoDadosCliente.ID_BIOMETRIA))                          
-
+                       + "&PROP_ATENDIMENTO_REMOTO=" + trim(texto(AtualizacaoDadosCliente.atendimento_remoto))   
                        + "&PROP_FLXPOLITICA="    + vPOLITICA.
 
                 end.   
