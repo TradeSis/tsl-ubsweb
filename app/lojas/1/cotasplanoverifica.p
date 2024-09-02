@@ -73,7 +73,7 @@ then do:
   create ttsaida.
   ttsaida.tstatus = if locked estab  then 500 else 404.
   ttsaida.descricaoStatus = "Estabelecimento de origem " + string(ttentrada.codigoFilial)
-                 + " Não encontrado.".
+                 + " Nao encontrado.".
 
   hsaida  = temp-table ttsaida:handle.
 
@@ -91,7 +91,7 @@ then do:
   create ttsaida.
   ttsaida.tstatus = if locked finan then 500 else 404.
   ttsaida.descricaoStatus = "plano " + string(ttentrada.codigoPlano) 
-                 + " N�o encontrado.".
+                 + " Nao encontrado.".
 
   hsaida  = temp-table ttsaida:handle.
 
@@ -231,7 +231,7 @@ end.
 else do:
     create ttsaida.
     ttsaida.tstatus = 500.
-    ttsaida.descricaoStatus = "Erro na Geração do JSON de SAIDA".
+    ttsaida.descricaoStatus = "Erro na Geracao do JSON de SAIDA".
 
     hsaida  = temp-table ttsaida:handle.
 
