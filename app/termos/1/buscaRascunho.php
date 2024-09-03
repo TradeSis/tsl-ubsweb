@@ -31,39 +31,39 @@ if (!isset($jsonEntrada["dadosEntrada"])) {
         "pedidoCartaoLebes" => array(
           array(
             "rascunho" => "RASCUNHO", // CHAMARA O MESMO PROGRAMA PROGRESS BUSCA TERMOS - AQUI INDICA QUE É PARA PEGAR O CAMPO RASCUNHO
-            "formatoTermo" => $jsonEntrada->formatoTermo ?? null,
-            "tipoOperacao" => $jsonEntrada->tipoOperacao ?? null,
-            "codigoLoja" => $jsonEntrada->codigoLoja ?? null,
-            "numeroComponente" => $jsonEntrada->numeroComponente ?? null,
-            "numeroNotaFiscal" => $jsonEntrada->numeroNotaFiscal ?? null,
-            "dataTransacao" => $jsonEntrada->dataTransacao ?? null,
-            "codigoCliente" => $jsonEntrada->codigoCliente ?? null,
-            "idBiometria" => $jsonEntrada->idBiometria ?? null,
-            "neuroIdOperacao" => $jsonEntrada->neuroIdOperacao ?? null,
-            "codigoProdutoFinanceiro" => $jsonEntrada->codigoProdutoFinanceiro ?? null,
-            "valorEmprestimo" => $jsonEntrada->valorEmprestimo ?? null,
-            "codigoVendedor" => $jsonEntrada->codigoVendedor ?? null,
-            "codigoOperador" => $jsonEntrada->codigoOperador ?? null,
-            "valorTotal" => $jsonEntrada->valorTotal ?? null,
-            "recebimentos" => $jsonEntrada->recebimentos ?? [],
+            "formatoTermo" => isset($jsonEntrada->formatoTermo) ? $jsonEntrada->formatoTermo : null,
+            "tipoOperacao" => isset($jsonEntrada->tipoOperacao) ? $jsonEntrada->tipoOperacao : null,
+            "codigoLoja" => isset($jsonEntrada->codigoLoja) ? $jsonEntrada->codigoLoja : null,
+            "numeroComponente" => isset($jsonEntrada->numeroComponente) ? $jsonEntrada->numeroComponente : null,
+            "numeroNotaFiscal" => isset($jsonEntrada->numeroNotaFiscal) ? $jsonEntrada->numeroNotaFiscal : null,
+            "dataTransacao" => isset($jsonEntrada->dataTransacao) ? $jsonEntrada->dataTransacao : null,
+            "codigoCliente" => isset($jsonEntrada->codigoCliente) ? $jsonEntrada->codigoCliente : null,
+            "idBiometria" => isset($jsonEntrada->idBiometria) ? $jsonEntrada->idBiometria : null,
+            "neuroIdOperacao" => isset($jsonEntrada->neuroIdOperacao) ? $jsonEntrada->neuroIdOperacao : null,
+            "codigoProdutoFinanceiro" => isset($jsonEntrada->codigoProdutoFinanceiro) ? $jsonEntrada->codigoProdutoFinanceiro : null,
+            "valorEmprestimo" => isset($jsonEntrada->valorEmprestimo) ? $jsonEntrada->valorEmprestimo : null,
+            "codigoVendedor" => isset($jsonEntrada->codigoVendedor) ? $jsonEntrada->codigoVendedor : null,
+            "codigoOperador" => isset($jsonEntrada->codigoOperador) ? $jsonEntrada->codigoOperador : null,
+            "valorTotal" => isset($jsonEntrada->valorTotal) ? $jsonEntrada->valorTotal : null,
+            "recebimentos" => isset($jsonEntrada->recebimentos) ? $jsonEntrada->recebimentos : array(),
             "cartaoLebes" => array(
               array(
-                "seqForma" => $jsonEntradaCartaoLebes->seqForma ?? null,
-                "numeroContrato" => $jsonEntradaCartaoLebes->numeroContrato ?? null,
-                "contratoFinanceira" => $jsonEntradaCartaoLebes->contratoFinanceira ?? null,
-                "cet" => $jsonEntradaCartaoLebes->cet ?? null,
-                "cetAno" => $jsonEntradaCartaoLebes->cetAno ?? null,
-                "taxaMes" => $jsonEntradaCartaoLebes->taxaMes ?? null,
-                "valorIof" => $jsonEntradaCartaoLebes->valorIof ?? null,
-                "qtdParcelas" => $jsonEntradaCartaoLebes->qtdParcelas ?? null,
-                "valorTFC" => $jsonEntradaCartaoLebes->valorTFC ?? null,
-                "valorAcrescimo" => $jsonEntradaCartaoLebes->valorAcrescimo ?? null,
-                "parcelas" => $jsonEntradaCartaoLebes->parcelas ?? [],
-                "seguroPrestamista" => array($jsonEntradaCartaoLebes->seguroPrestamista) ?? []
+                    "seqForma" => isset($jsonEntradaCartaoLebes->seqForma) ? $jsonEntradaCartaoLebes->seqForma : null,
+                    "numeroContrato" => isset($jsonEntradaCartaoLebes->numeroContrato) ? $jsonEntradaCartaoLebes->numeroContrato : null,
+                    "contratoFinanceira" => isset($jsonEntradaCartaoLebes->contratoFinanceira) ? $jsonEntradaCartaoLebes->contratoFinanceira : null,
+                    "cet" => isset($jsonEntradaCartaoLebes->cet) ? $jsonEntradaCartaoLebes->cet : null,
+                    "cetAno" => isset($jsonEntradaCartaoLebes->cetAno) ? $jsonEntradaCartaoLebes->cetAno : null,
+                    "taxaMes" => isset($jsonEntradaCartaoLebes->taxaMes) ? $jsonEntradaCartaoLebes->taxaMes : null,
+                    "valorIof" => isset($jsonEntradaCartaoLebes->valorIof) ? $jsonEntradaCartaoLebes->valorIof : null,
+                    "qtdParcelas" => isset($jsonEntradaCartaoLebes->qtdParcelas) ? $jsonEntradaCartaoLebes->qtdParcelas : null,
+                    "valorTFC" => isset($jsonEntradaCartaoLebes->valorTFC) ? $jsonEntradaCartaoLebes->valorTFC : null,
+                    "valorAcrescimo" => isset($jsonEntradaCartaoLebes->valorAcrescimo) ? $jsonEntradaCartaoLebes->valorAcrescimo : null,
+                    "parcelas" => isset($jsonEntradaCartaoLebes->parcelas) ? $jsonEntradaCartaoLebes->parcelas : array(),
+                    "seguroPrestamista" => isset($jsonEntradaCartaoLebes->seguroPrestamista) ? array($jsonEntradaCartaoLebes->seguroPrestamista) : array()
               )
             ),
-            "contratosRenegociados" => $jsonEntrada->contratosRenegociados ?? [],
-            "produtos" => $jsonEntrada->produtos ?? []
+            "contratosRenegociados" => isset($jsonEntrada->contratosRenegociados) ? $jsonEntrada->contratosRenegociados : array(),
+            "produtos" => isset($jsonEntrada->produtos) ? $jsonEntrada->produtos : array()
           )
         )
       )
