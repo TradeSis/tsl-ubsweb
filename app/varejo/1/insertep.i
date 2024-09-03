@@ -43,7 +43,7 @@ DEFINE TEMP-TABLE ttcontrato NO-UNDO SERIALIZE-NAME "contrato"
         field id as char 
         field idPai as char 
         field codigoLoja as char 
-        field codigoCliente as char 
+        field cpfCliente as char 
         field numeroContrato as char 
         field dataInicial as char 
         field valorTotal as char 
