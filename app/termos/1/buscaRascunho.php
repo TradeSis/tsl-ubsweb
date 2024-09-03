@@ -79,7 +79,7 @@ if (!isset($jsonEntrada["dadosEntrada"])) {
 
 fwrite($arquivo,$log_datahora_ini."$acao"."-FORMATADO->".$conteudoEntrada."\n");
 // CHAMARA O MESMO PROGRAMA PROGRESS BUSCA TERMOS
-$retorno = $progr->executarprogress("termos/1/buscatermos", $conteudoEntrada);
+$retorno = $progr->executarprogress("termos/1/buscatermos",$conteudoEntrada,$dlc,$pf,$propath,$progresscfg,$tmp,$proginicial);
 fwrite($arquivo,$log_datahora_ini."$acao"."-RETORNO->".$retorno."\n");
 $termos = json_decode($retorno, true);
 if (isset($termos["conteudoSaida"][0])) { // Conteudo Saida - Caso de erro
