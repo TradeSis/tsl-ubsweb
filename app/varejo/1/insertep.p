@@ -7,7 +7,7 @@ def var vlcsaida   as longchar.
 def var vsaida as char.
 def var hentrada as handle.
 def var hsaida   as handle.
-
+def var vclicod as int.
 
 DEFINE INPUT  PARAMETER lcJsonEntrada      AS LONGCHAR.
 def    var verro as char no-undo.
@@ -100,11 +100,22 @@ for each ttinsertep.
                 verro = "CONTRATO JA CADASTRADO ANTERIORMENTE " + ttcontrato.numeroContrato.
                 leave.
             end.
-            find clien where clien.clicod = int(ttcontrato.codigoCliente) NO-LOCK no-error.
-            if not avail clien
+            find neuclien where neuclien.cpf = dec(ttcontrato.cpfCliente) NO-LOCK no-error.
+            if not avail neuclien
             then do:
-                verro = "CLIENTE NAO CADASTRADO " + ttcontrato.codigoCliente.
-                leave.
+                find clien where clien.ciccgc = ttcontrato.cpfCliente no-lock no-error.
+                if not avail clien
+                then do:
+                    verro = "CLIENTE NAO CADASTRADO cpfCliente = " + ttcontrato.cpfCliente.
+                    leave.
+                end.
+                else do:
+                    vclicod = clien.clicod.
+                end.
+            end.
+            else do:
+                find clien where clien.clicod = neuclien.clicod no-lock no-error.
+                vclicod = clien.clicod.
             end.
 
         end.

@@ -122,7 +122,7 @@ def var valteraprincipal as log.
         else for each ttcontrato where ttcontrato.id = ttrecebimentos.id: 
         
             pdvforma.contnum      = ttcontrato.numeroContrato.
-            pdvforma.clifor       = int(ttcontrato.codigoCliente).
+            pdvforma.clifor       = vclicod.
             pdvforma.crecod       = 2.
             
             pdvforma.qtd_parcelas  = int(ttcontrato.qtdParcelas).
@@ -139,7 +139,7 @@ def var valteraprincipal as log.
 
             
             ASSIGN contrato.vlseguro = 0. 
-              contrato.clicod        = int(ttcontrato.codigoCliente).
+              contrato.clicod        = vclicod.
               contrato.dtinicial     = vdatamov.
               contrato.etbcod        = pdvmov.etbcod.
               contrato.vltotal       = dec(ttcontrato.valorTotal) + dec(ttcontrato.valorEntrada).
