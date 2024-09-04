@@ -49,7 +49,7 @@ def  temp-table VerificaCreditoVenda serialize-name "dadosEntrada"
     field vdaterceiros as char
     field neuro_id_operacao as char
     field ID_BIOMETRIA as char
-    field atendimento_remoto as char. /* heloi 29082024 - proj inteligencia biometria */
+    field atendimento_presencial as char. /* heloi 29082024 - proj inteligencia biometria */
 
 hentrada = temp-table VerificaCreditoVenda:HANDLE.
 
@@ -656,7 +656,7 @@ then do.
 
     /* helio 190324 - aqssinatura digital */
     run log("ID_BIOMETRIA " + texto(verificacreditovenda.ID_BIOMETRIA) +
-    " atendimento_remoto " + texto(verificacreditovenda.atendimento_remoto)).
+    " atendimento_presencial " + texto(verificacreditovenda.atendimento_presencial)).
     if verificacreditovenda.ID_BIOMETRIA <> ? and verificacreditovenda.ID_BIOMETRIA <> ""
     then do:
         run log("GUARDA Biometria = " + string(clien.clicod) + " " + verificacreditovenda.ID_BIOMETRIA).
@@ -936,7 +936,7 @@ then do.
                        + "&PROP_GENERO=" + texto(clien.genero)   
 
                        + "&PROP_ID_BIOMETRIA=" + trim(texto(VerificaCreditoVenda.ID_BIOMETRIA))  
-                       + "&PROP_ATENDIMENTO_REMOTO=" + trim(texto(VerificaCreditoVenda.atendimento_remoto))                          
+                       + "&PROP_ATENDIMENTO_PRESENCIAL=" + trim(texto(VerificaCreditoVenda.atendimento_presencial))                          
 
                    + "&PROP_FLXPOLITICA="    + vPOLITICA.
             vtimeini = mtime. /* #9 */
@@ -1265,7 +1265,7 @@ then do.
                      + "&PROP_DTCADASTRO=" + texto(string(clien.dtcad,"99/99/9999")) 
                      + "&PROP_VALIDADELIM=" + (if neuclien.vctolimite = ? then "" else string(neuclien.vctolimite,"99/99/9999"))                                       
                 + "&PROP_ID_BIOMETRIA=" + trim(texto(VerificaCreditoVenda.ID_BIOMETRIA))     
-                + "&PROP_ATENDIMENTO_REMOTO=" + trim(texto(VerificaCreditoVenda.atendimento_remoto))                                               
+                + "&PROP_ATENDIMENTO_PRESENCIAL=" + trim(texto(VerificaCreditoVenda.atendimento_presencial))                                               
                 /* helio 08012024 */
                 + "&PROP_LISTA_EGUARDIAN=" + trim(texto(vpropLISTA_EGUARDIAN))                                                  
                 + "&PROP_FLXPOLITICA="  + vPOLITICA.
