@@ -1,12 +1,5 @@
-using Progress.Json.ObjectModel.JsonObject.
-using Progress.Json.ObjectModel.JsonArray.
-using Progress.Json.ObjectModel.ObjectModelParser.
-
 def input param vlcentrada as longchar. /* JSON ENTRADA */
 //def input param vtmp       as char.     /* CAMINHO PROGRESS_TMP */
-
-define VARIABLE omParser  as ObjectModelParser no-undo.
-define variable joEntrada  AS JsonObject no-undo.
 
 def var vlcsaida   as longchar.         /* JSON SAIDA */
 
