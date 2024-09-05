@@ -55,7 +55,7 @@ DEF DATASET dsOfertas  SERIALIZE-NAME "JSON"
   DATA-RELATION for2 FOR ttdebts, ttcompany    RELATION-FIELDS(ttdebts.iddebts,ttcompany.idpaidebts) NESTED
   DATA-RELATION for3 FOR ttdebts, ttcompanyOrigin    RELATION-FIELDS(ttdebts.iddebts,ttcompanyOrigin.idpaidebts) NESTED.  
 
-
+  
 def temp-table ttsaida  no-undo serialize-name "conteudoSaida"  /* JSON SAIDA CASO ERRO */
     field tstatus        as int serialize-name "status"
     field descricaoStatus      as char.
@@ -96,7 +96,7 @@ ttdebts.occurrenceDate = "2020-04-17".
 ttdebts.originalValue = 150.
 ttdebts.currentValue = 250.
 ttdebts.contractNumber = "123456".
-ttdebts.vtype = "[PT] Cartao de Credito [EN] Credit card".
+ttdebts.vtype = "[PT] Cartão de Crédito [EN] Credit card".
 ttdebts.idpai = "8d4b3cc7-5020-4c57-aa76-52eb9f28ab2a".
 ttdebts.iddebts = "1".
 
