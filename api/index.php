@@ -246,6 +246,10 @@ switch ($aplicacao) {
     case "varejo": /* helio 022023 insert nop crediario admcom */
         include "../app/varejo/versao.php";
         break;
+
+    case "serasa": /* lucas 02092024 inicio */
+        include "../app/serasa/versao.php";
+        break;
     
            
    default:
