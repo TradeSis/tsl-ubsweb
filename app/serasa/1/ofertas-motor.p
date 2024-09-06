@@ -1,12 +1,10 @@
 def input param vlcentrada as longchar. /* JSON ENTRADA */
-//def input param vtmp       as char.     /* CAMINHO PROGRESS_TMP */
 
 def var vlcsaida   as longchar.         /* JSON SAIDA */
 
 def var lokjson as log.                 /* LOGICAL DE APOIO */
 def var hentrada as handle.             /* HANDLE ENTRADA */
 def var hsaida   as handle.             /* HANDLE SAIDA */
-
 
 def temp-table ttentrada no-undo serialize-name "dadosEntrada"   /* JSON ENTRADA */
    field cnpj_raiz         as char serialize-name "cnpj_raiz"
@@ -79,7 +77,7 @@ then do:
 end.
 
 CREATE ttoffers.
-ttoffers.id = "8d4b3cc7-5020-4c57-aa76-52eb9f28ab2a".
+ttoffers.id = "1". //"8d4b3cc7-5020-4c57-aa76-52eb9f28ab2a".
 ttoffers.debtOriginalValues = 200.
 ttoffers.debtCurrentValues = 400.
 ttoffers.maxInstalments = 8.
@@ -90,6 +88,7 @@ ttoffers.discountValue = 100.
 ttoffers.discountPercentage = 25.
 ttoffers.hasInstalments = TRUE.
 
+
 CREATE ttdebts.
 ttdebts.dueDate = "2020-04-17".
 ttdebts.occurrenceDate = "2020-04-17".
@@ -97,8 +96,9 @@ ttdebts.originalValue = 150.
 ttdebts.currentValue = 250.
 ttdebts.contractNumber = "123456".
 ttdebts.vtype = "[PT] Cartao de Credito [EN] Credit card".
-ttdebts.idpai = "8d4b3cc7-5020-4c57-aa76-52eb9f28ab2a".
+ttdebts.idpai = "1". //"8d4b3cc7-5020-4c57-aa76-52eb9f28ab2a".
 ttdebts.iddebts = "1".
+
 
 CREATE ttcompany.
 ttcompany.id = "29939269000110".

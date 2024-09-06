@@ -1,5 +1,4 @@
 def input param vlcentrada as longchar. /* JSON ENTRADA */
-//def input param vtmp       as char.     /* CAMINHO PROGRESS_TMP */
 
 def var vlcsaida   as longchar.         /* JSON SAIDA */
 
@@ -7,61 +6,47 @@ def var lokjson as log.                 /* LOGICAL DE APOIO */
 def var hentrada as handle.             /* HANDLE ENTRADA */
 def var hsaida   as handle.             /* HANDLE SAIDA */
 
-
 def temp-table ttentrada no-undo serialize-name "dadosEntrada"   /* JSON ENTRADA */
-   field document        as char serialize-name "document" /* CPJ/CNPJ do consumidor */
+   field document        as char serialize-name "document"
    field offer_id         as char serialize-name "offerId".
 
-DEF TEMP-TABLE ttnegociacao NO-UNDO SERIALIZE-NAME "negociacao"
+DEF TEMP-TABLE ttnegociacao NO-UNDO serialize-name "negociacao"
    FIELD offerId AS CHAR
-   FIELD vtype AS CHAR SERIALIZE-NAME "type".
-
-DEF TEMP-TABLE ttinstalments NO-UNDO SERIALIZE-NAME "instalments"
+   FIELD vtype AS CHAR serialize-name "type".
+   
+DEF TEMP-TABLE ttinstalments NO-UNDO serialize-name "instalments"
    FIELD id AS CHAR
-   FIELD vtotal AS DEC SERIALIZE-NAME "total"
+   FIELD vtotal AS DEC serialize-name "total"
    FIELD totalWithoutInterest AS DEC
    FIELD discountValue AS DEC
    FIELD discountPercentage AS DEC
    FIELD instalment AS DEC.
-   
+
 DEF TEMP-TABLE ttdueDate NO-UNDO SERIALIZE-NAME "dueDate"
    FIELD dueDate AS CHAR
    field idpai as char serialize-hidden.
-   
+
 DEF TEMP-TABLE ttvalues NO-UNDO SERIALIZE-NAME "values"
    FIELD vvalue AS DEC SERIALIZE-NAME "value"
    FIELD vtotal AS DEC SERIALIZE-NAME "total"
    field idpai as char serialize-hidden.
-  
-DEF TEMP-TABLE tttaxes NO-UNDO SERIALIZE-NAME "taxes"
-   field idpai as char serialize-hidden
-   field idtaxes as char serialize-hidden.
-
-DEF TEMP-TABLE ttiof NO-UNDO SERIALIZE-NAME "iof"
-   FIELD percentage AS DEC
-   FIELD totalValue AS DEC
-   field idpaitaxes as char serialize-hidden.
-
-   DEF TEMP-TABLE ttcet NO-UNDO SERIALIZE-NAME "cet"
-   FIELD yearPercentage AS DEC
-   FIELD monthPercentage AS DEC
-   FIELD totalValue AS DEC
-   field idpaitaxes as char serialize-hidden.
-
-DEF TEMP-TABLE ttinterest NO-UNDO SERIALIZE-NAME "interest"
-   FIELD yearPercentage AS DEC
-   FIELD monthPercentage AS DEC
-   FIELD totalValue AS DEC
-   field idpaitaxes as char serialize-hidden.
+   
+DEF TEMP-TABLE tttaxes NO-UNDO serialize-name "taxes"
+   FIELD iof_percentage AS DEC 
+   FIELD iof_totalValue AS DEC
+   FIELD cet_yearPercentage AS DEC 
+   FIELD cet_monthPercentage AS DEC
+   FIELD cet_totalValue AS DEC
+   FIELD interest_yearPercentage AS DEC
+   FIELD interest_monthPercentage AS DEC
+   FIELD interest_totalValue AS DEC
+   field idpai as char serialize-hidden.
    
 DEF DATASET dsNegociacao  SERIALIZE-NAME "JSON" 
-   FOR ttnegociacao, ttinstalments, ttdueDate, ttvalues, tttaxes, ttiof, ttcet, ttinterest 
+   FOR ttnegociacao, ttinstalments, ttdueDate, ttvalues, tttaxes
    DATA-RELATION for1 FOR ttinstalments, ttdueDate    RELATION-FIELDS(ttinstalments.id,ttdueDate.idpai) NESTED
-   DATA-RELATION for2 FOR ttinstalments, ttvalues     RELATION-FIELDS(ttinstalments.id,ttvalues.idpai) NESTED
-   DATA-RELATION for3 FOR ttinstalments, tttaxes      RELATION-FIELDS(ttinstalments.id,tttaxes.idpai) NESTED
-   DATA-RELATION for4 FOR tttaxes, ttiof      RELATION-FIELDS(tttaxes.idtaxes,ttiof.idpaitaxes) NESTED.
-   //DATA-RELATION for5 FOR tttaxes, ttcet      RELATION-FIELDS(tttaxes.idtaxes,ttcet.idpaitaxes) NESTED
-   //DATA-RELATION for6 FOR tttaxes, ttinterest      RELATION-FIELDS(tttaxes.idtaxes,ttinterest.idpaitaxes) NESTED.  
+   DATA-RELATION for2 FOR ttinstalments, ttvalues    RELATION-FIELDS(ttinstalments.id,ttvalues.idpai) NESTED
+   DATA-RELATION for3 FOR ttinstalments, tttaxes    RELATION-FIELDS(ttinstalments.id,tttaxes.idpai) NESTED.
 
 def temp-table ttsaida  no-undo serialize-name "conteudoSaida"  /* JSON SAIDA CASO ERRO */
     field tstatus        as int serialize-name "status"
@@ -100,11 +85,12 @@ ttinstalments.instalment = 1.
 
 CREATE ttinstalments.
 ttinstalments.id = "2".
-ttinstalments.vtotal = 2.
-ttinstalments.totalWithoutInterest = 2.
-ttinstalments.discountValue = 2.
-ttinstalments.discountPercentage = 2.
+ttinstalments.vtotal = 200.
+ttinstalments.totalWithoutInterest = 200.
+ttinstalments.discountValue = 200.
+ttinstalments.discountPercentage = 20.
 ttinstalments.instalment = 2.
+
 
 CREATE ttdueDate.
 ttdueDate.dueDate = "2024-08-19".
@@ -118,40 +104,40 @@ CREATE ttdueDate.
 ttdueDate.dueDate = "2024-08-21".
 ttdueDate.idpai = "1".
 
+
+CREATE ttdueDate.
+ttdueDate.dueDate = "2024-08-10".
+ttdueDate.idpai = "2".
+
+CREATE ttdueDate.
+ttdueDate.dueDate = "2024-08-11".
+ttdueDate.idpai = "2".
+
+CREATE ttdueDate.
+ttdueDate.dueDate = "2024-08-12".
+ttdueDate.idpai = "2".
+
 CREATE ttvalues.
 ttvalues.vvalue = 300.
 ttvalues.vtotal = 300.
 ttvalues.idpai = "1".
- 
+
+CREATE ttvalues.
+ttvalues.vvalue = 222.
+ttvalues.vtotal = 222.
+ttvalues.idpai = "2".
 
 CREATE tttaxes.
-/* tttaxes.iof_percentage = 0.
-tttaxes.iof_totalValue = 0.
+tttaxes.iof_percentage = 50.
+tttaxes.iof_totalValue = 11.
 tttaxes.cet_yearPercentage = 0.
 tttaxes.cet_monthPercentage = 0.
 tttaxes.cet_totalValue = 0.
 tttaxes.interest_yearPercentage = 0.
 tttaxes.interest_monthPercentage = 0.
-tttaxes.interest_totalValue = 0. */
+tttaxes.interest_totalValue = 0.
 tttaxes.idpai = "1".
-tttaxes.idtaxes = "1".
 
-CREATE ttiof.
-ttiof.percentage = 0.
-ttiof.totalValue = 0.
-ttiof.idpaitaxes = "1".
-
-CREATE ttcet.
-ttcet.yearPercentage = 0.
-ttcet.monthPercentage = 0.
-ttcet.totalValue = 0.
-ttcet.idpaitaxes = "1".
-
-CREATE ttinterest.
-ttinterest.yearPercentage = 0.
-ttinterest.monthPercentage = 0.
-ttinterest.totalValue = 0.
-ttinterest.idpaitaxes = "1".
 
 hsaida =  DATASET dsNegociacao:HANDLE.
 
