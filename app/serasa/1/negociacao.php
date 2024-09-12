@@ -14,8 +14,14 @@ function isJson($string)
 
 fwrite($arquivo, $identificacao . "-ENTRADA->" . json_encode($jsonEntrada) . "\n");
 fwrite($arquivo, $identificacao . "-PARAMETRO->" . json_encode($parametro) . "\n");
+fwrite($arquivo, $identificacao . "-PARAMETRO2->" . json_encode($parametro2) . "\n");
 
-$conteudoEntrada = json_encode($jsonEntrada);
+
+ $conteudoEntrada = json_encode(array(
+        "dadosEntrada" => array(array(
+                "document" =>  $parametro,
+                "offer_id" => $parametro2
+            ))));
 
 $progr = new chamaprogress();
 
@@ -38,7 +44,7 @@ foreach ($instalments  as $instalment) {
   $dueDatenovo = array();
   // Transformar em lista
   foreach ($instalment["dueDate"] as $item) {
-    list("dueDate" => $dueDate) = $item;
+//    list("dueDate" => $dueDate) = $item;
     array_push($dueDatenovo, $dueDate);
   }
   // remover o objeto dueDate

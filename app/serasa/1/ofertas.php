@@ -14,8 +14,14 @@ function isJson($string)
 
 fwrite($arquivo, $identificacao . "-ENTRADA->" . json_encode($jsonEntrada) . "\n");
 fwrite($arquivo, $identificacao . "-PARAMETRO->" . json_encode($parametro) . "\n");
+fwrite($arquivo, $identificacao . "-PARAMETRO2->" . json_encode($parametro2) . "\n");
 
-$conteudoEntrada = json_encode($jsonEntrada);
+
+ $conteudoEntrada = json_encode(array(
+        "dadosEntrada" => array(array(
+                "cnpj_raiz" =>  $parametro,
+                "document" => $parametro2
+            ))));
 
 $progr = new chamaprogress();
 

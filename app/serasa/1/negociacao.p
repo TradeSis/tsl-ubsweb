@@ -7,8 +7,8 @@ def var hentrada as handle.             /* HANDLE ENTRADA */
 def var hsaida   as handle.             /* HANDLE SAIDA */
 
 def temp-table ttentrada no-undo serialize-name "dadosEntrada"   /* JSON ENTRADA */
-   field document        as char serialize-name "document"
-   field offer_id         as char serialize-name "offerId".
+   field document        as char 
+   field offer_id         as char.
 
 DEF TEMP-TABLE ttnegociacao NO-UNDO serialize-name "negociacao"
    FIELD offerId AS CHAR

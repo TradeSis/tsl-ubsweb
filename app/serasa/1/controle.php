@@ -5,19 +5,21 @@
 //echo "metodo=".$metodo."\n";
 //echo "funcao=".$funcao."\n";
 //echo "parametro=".$parametro."\n";
+$muda = $funcao;
+$funcao = $parametro;
+$parametro = $muda; 
 
-
-$explode = explode("/",$funcao);
+$explode = explode("/",$parametro);
 
 if ($explode[0]) {
-  $funcao = $explode[0];
+  $parametro = $explode[0];
 }
-/* if ($explode[1]) {
+if ($explode[1]) {
   $parametro2 = $explode[1];
-} */
-/*if ($explode[2]) {
+} 
+if ($explode[2]) {
   $parametro3 = $explode[2];
-}*/
+}
 
 if ($funcao == "saude" || $funcao == "health-check") {
   $funcao = "saude"; 
@@ -45,10 +47,12 @@ if ($funcao == "pagamento" || $funcao == "payments") {
 }
 
 
-//echo "funcao=".$funcao."\n";
-//echo "parametro=".$parametro."\n";
-//echo "parametro2=".$parametro2."\n";
-//echo "parametro3=".$parametro3."\n";
+//echo "2 funcao=".$funcao."\n";
+//echo "2 parametro=".$parametro."\n";
+//echo "2 parametro2=".$parametro2."\n";
+//echo "2 parametro3=".$parametro3."\n";
+//echo "2 metodo=".$metodo."\n";
+
 
 
 if ($metodo=="GET"){

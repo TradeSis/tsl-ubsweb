@@ -77,7 +77,7 @@ then do:
 end.
 
 CREATE ttoffers.
-ttoffers.id = "1". //"8d4b3cc7-5020-4c57-aa76-52eb9f28ab2a".
+ttoffers.id = "1". /*"8d4b3cc7-5020-4c57-aa76-52eb9f28ab2a".*/
 ttoffers.debtOriginalValues = 200.
 ttoffers.debtCurrentValues = 400.
 ttoffers.maxInstalments = 8.
@@ -96,7 +96,7 @@ ttdebts.originalValue = 150.
 ttdebts.currentValue = 250.
 ttdebts.contractNumber = "123456".
 ttdebts.vtype = "[PT] Cartao de Credito [EN] Credit card".
-ttdebts.idpai = "1". //"8d4b3cc7-5020-4c57-aa76-52eb9f28ab2a".
+ttdebts.idpai = "1". /*"8d4b3cc7-5020-4c57-aa76-52eb9f28ab2a".*/
 ttdebts.iddebts = "1".
 
 
