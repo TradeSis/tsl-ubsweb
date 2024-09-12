@@ -34,9 +34,31 @@ if ($funcao=="negociacao"&&$parametro3=="confirmar-pagamento") {
   $funcao=$funcao.$parametro3;
 }
 */
-if ($parametro=="cliente") {
-  $funcao=$parametro;
-  $parametro=null;
+
+
+if ($funcao == "saude" || $funcao == "health-check") {
+  $funcao = "saude"; 
+}
+if ($funcao == "ofertas" || $funcao == "offers") {
+  $funcao = "ofertas"; 
+}
+if ($funcao == "ofertas-motor" || $funcao == "offers-motor") {
+  $funcao = "ofertas-motor"; 
+}
+if ($funcao == "negociacao" || $funcao == "instalments") {
+  $funcao = "negociacao"; 
+}
+if ($funcao == "negociacao-motor" || $funcao == "instalments-motor") {
+  $funcao = "negociacao-motor"; 
+}
+if ($funcao == "acordos" || $funcao == "agreements") {
+  $funcao = "acordos"; 
+}
+if ($funcao == "cancela-acordo" || $funcao == "agreements-cancel") {
+  $funcao = "cancela-acordo"; 
+}
+if ($funcao == "pagamento" || $funcao == "payments") {
+  $funcao = "pagamento"; 
 }
 
 
