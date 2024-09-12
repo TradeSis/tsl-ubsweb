@@ -19,23 +19,6 @@ if ($explode[0]) {
   $parametro3 = $explode[2];
 }*/
 
-/*
-if ($funcao=="parcelas"&&$parametro2=="boleto") {
-  $funcao=$funcao.$parametro2;
-}
-if ($funcao=="parcelas"&&$parametro2=="confirmar-pagamento") {
-  $funcao=$funcao.$parametro2;
-}
-
-if ($funcao=="negociacao"&&$parametro3=="boleto") {
-  $funcao=$funcao.$parametro3;
-}
-if ($funcao=="negociacao"&&$parametro3=="confirmar-pagamento") {
-  $funcao=$funcao.$parametro3;
-}
-*/
-
-
 if ($funcao == "saude" || $funcao == "health-check") {
   $funcao = "saude"; 
 }
@@ -69,13 +52,7 @@ if ($funcao == "pagamento" || $funcao == "payments") {
 
 
 if ($metodo=="GET"){
-/*  if (!isset($funcao)) {
 
-    if (isset($parametro)) {
-      $funcao = "getcliente";
-    }
-  }
-*/
   switch ($funcao) {
     case "saude":
       include 'saude.php';
