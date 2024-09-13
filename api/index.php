@@ -282,7 +282,10 @@ if ($log=="true") {
 } else {
     if (isset($jsonSaida)){
 
-
+    if ($aplicacao === "serasa") {
+          echo json_encode($jsonSaida)."\n"; /* vou ter que tratar erornop diferente */
+    }
+    else {
         if (isset($jsonSaida->status)) {
             //echo "\nstatus=".$jsonSaida->status."-"."\n";
             retornaheader($jsonSaida->status);
@@ -294,6 +297,7 @@ if ($log=="true") {
         echo json_encode($jsonSaida)."\n";
 
       }
+   } 
 }
 
 ?>
