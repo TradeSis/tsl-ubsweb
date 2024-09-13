@@ -24,17 +24,11 @@ if ($explode[2]) {
 if ($funcao == "saude" || $funcao == "health-check") {
   $funcao = "saude"; 
 }
-if ($funcao == "ofertas" || $funcao == "offers") {
+if ($funcao == "ofertas" || $funcao == "offers" || $funcao == "ofertas-motor" || $funcao == "offers-motor") {
   $funcao = "ofertas"; 
 }
-if ($funcao == "ofertas-motor" || $funcao == "offers-motor") {
-  $funcao = "ofertas-motor"; 
-}
-if ($funcao == "negociacao" || $funcao == "instalments") {
+if ($funcao == "negociacao" || $funcao == "instalments" || $funcao == "negociacao-motor" || $funcao == "instalments-motor") {
   $funcao = "negociacao"; 
-}
-if ($funcao == "negociacao-motor" || $funcao == "instalments-motor") {
-  $funcao = "negociacao-motor"; 
 }
 if ($funcao == "acordos" || $funcao == "agreements") {
   $funcao = "acordos"; 

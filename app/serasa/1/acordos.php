@@ -4,7 +4,7 @@ $log_datahora_ini = date("dmYHis");
 $acao = "acordos";
 $mypid = getmypid();
 $identificacao = $log_datahora_ini . "-PID" . $mypid . "-" . "$acao";
-$arqlog = "/ws/log/serasa_acordos_" . date("dmY") . ".log";
+$arqlog = "/ws/log/serasa_" . date("dmY") . ".log";
 $arquivo = fopen($arqlog, "a");
 function isJson($string)
 {
@@ -13,17 +13,20 @@ function isJson($string)
 }
 
 fwrite($arquivo, $identificacao . "-ENTRADA->" . json_encode($jsonEntrada) . "\n");
-fwrite($arquivo, $identificacao . "-PARAMETRO->" . json_encode($parametro) . "\n");
+//fwrite($arquivo, $identificacao . "-PARAMETRO->" . json_encode($parametro) . "\n");
 
-$conteudoEntrada = json_encode($jsonEntrada);
-/* 
-{"dadosEntrada":[{"document":"23599482020","offerId":"8d4b3cc7-5020-4c57-aa76-52eb9f28ab2a","dueDate":"2024-08-19","id":"2"}]}
-*/
+
+ $conteudoEntrada = json_encode(array(
+        "dadosEntrada" => array($jsonEntrada)
+            ));
+
+
 $progr = new chamaprogress();
 
 fwrite($arquivo, $identificacao . "-CONTEUDO->" . json_encode($conteudoEntrada) . "\n");
 
 $retorno = $progr->executarprogress("serasa/1/acordos", $conteudoEntrada, $dlc, $pf, $propath, $progresscfg, $tmp, $proginicial);
+fwrite($arquivo, $identificacao . "-RETORNO->" . json_encode($retorno) . "\n");
 
 $conteudoSaida  = (object) json_decode($retorno,true);
 $acordos        = $conteudoSaida->JSON["acordos"][0];

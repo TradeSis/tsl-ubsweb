@@ -4,7 +4,7 @@ $log_datahora_ini = date("dmYHis");
 $acao = "negociacao";
 $mypid = getmypid();
 $identificacao = $log_datahora_ini . "-PID" . $mypid . "-" . "$acao";
-$arqlog = "/ws/log/serasa_negociacao_" . date("dmY") . ".log";
+$arqlog = "/ws/log/serasa_" . date("dmY") . ".log";
 $arquivo = fopen($arqlog, "a");
 function isJson($string)
 {

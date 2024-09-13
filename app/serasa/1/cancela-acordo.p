@@ -1,5 +1,4 @@
 def input param vlcentrada as longchar. /* JSON ENTRADA */
-//def input param vtmp       as char.     /* CAMINHO PROGRESS_TMP */
 
 def var vlcsaida   as longchar.         /* JSON SAIDA */
 
@@ -22,9 +21,9 @@ MODELO DADOS SAIDA
 */
 
 def temp-table ttentrada no-undo serialize-name "dadosEntrada"   /* JSON ENTRADA */
-   field document        as char serialize-name "document"
-   field offerId         as char serialize-name "offerId"
-   field agreementId     as char serialize-name "agreementId".
+   field document        as char 
+   field offerId         as char 
+   field agreementId     as char .
 
 def temp-table ttcancelaacordo  no-undo serialize-name "cancelaacordo"  /* JSON SAIDA */
     field offerId   as CHAR serialize-name "offerId"

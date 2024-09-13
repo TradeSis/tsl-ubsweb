@@ -1,5 +1,4 @@
 def input param vlcentrada as longchar. /* JSON ENTRADA */
-//def input param vtmp       as char.     /* CAMINHO PROGRESS_TMP */
 
 def var vlcsaida   as longchar.         /* JSON SAIDA */
 

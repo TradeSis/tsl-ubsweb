@@ -12,9 +12,13 @@ function isJson($string) {
 } 
 
 fwrite($arquivo,$identificacao."-ENTRADA->".json_encode($jsonEntrada)."\n");
-fwrite($arquivo,$identificacao."-PARAMETRO->".json_encode($parametro)."\n");
+//fwrite($arquivo,$identificacao."-PARAMETRO->".json_encode($parametro)."\n");
 
-$conteudoEntrada = json_encode($jsonEntrada);
+
+ $conteudoEntrada = json_encode(array(
+        "dadosEntrada" => array($jsonEntrada)
+            ));
+
 
 $progr = new chamaprogress();
 
