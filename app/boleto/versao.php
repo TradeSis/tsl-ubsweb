@@ -2,7 +2,7 @@
 include "config.php";
 
 if ($versao==""){$versao="1";}
-if ($metodo=="POST") {
+if ($metodo=="POST" || $metodo=="GET") {
 
       switch ($versao) {
          case "1":
