@@ -29,7 +29,7 @@ function isJson($string) {
   }
  fwrite($arquivo,$log_datahora_ini."$acao"."-HML->".json_encode($hml)."\n");
  fwrite($arquivo,$log_datahora_ini."$acao"."-service_url->".$service_url."\n");
- /*
+ 
  $curl = curl_init($service_url);
  curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
  curl_setopt($curl, CURLOPT_POSTFIELDS, $conteudoFormatado);
@@ -46,8 +46,8 @@ function isJson($string) {
  fwrite($arquivo,$log_datahora_ini."$acao"."-http_code->".$info['http_code']."\n");
 
  curl_close($curl); // close cURL handler
-*/
 
+/*** fake
  $curl_response = '{
     "id_requisicao": 3592604,
     "retorno": {
@@ -102,7 +102,7 @@ function isJson($string) {
         "mensagem": "Dados do boleto consultados com sucesso."
     }
 }';
-
+**/
  $result = json_decode($curl_response, true);
  fwrite($arquivo,$log_datahora_ini."$acao"."-SAIDA->".json_encode($result)."\n");
 
@@ -140,6 +140,3 @@ function isJson($string) {
    fclose($arquivo);
   
   
-    //echo json_decode(json_encode($jsonSaida))
-
-    //echo $conteudoFormatado;

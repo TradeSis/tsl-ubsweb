@@ -47,7 +47,7 @@ function isJson($string) {
  fwrite($arquivo,$log_datahora_ini."$acao"."-HML->".json_encode($hml)."\n");
  fwrite($arquivo,$log_datahora_ini."$acao"."-service_url->".$service_url."\n");
  fwrite($arquivo,$log_datahora_ini."$acao"."-METODO->POST\n");
- /*
+ 
  $curl = curl_init($service_url);
  curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
  curl_setopt($curl, CURLOPT_POSTFIELDS, $conteudoFormatado);
@@ -64,8 +64,8 @@ function isJson($string) {
  fwrite($arquivo,$log_datahora_ini."$acao"."-http_code->".$info['http_code']."\n");
 
  curl_close($curl); // close cURL handler
-*/
 
+ /** fake
  $curl_response = '{
     "id_requisicao": 3589845,
     "retorno": {
@@ -108,7 +108,8 @@ function isJson($string) {
         "mensagem": "Solicitação de pagamento recebida com sucesso. Aguardando confirmação."
     }
 }';
-
+ **/
+ 
  $result = json_decode($curl_response, true);
  fwrite($arquivo,$log_datahora_ini."$acao"."-SAIDA->".json_encode($result)."\n");
 
@@ -141,7 +142,7 @@ function isJson($string) {
         );
 
         fwrite($arquivo,$log_datahora_ini."$acao"."-ENTRADACONFIRMACAO->".json_encode($confirmacaoEntrada)."\n");
-          /*
+          
           $curl = curl_init($service_url);
           curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PATCH");
           curl_setopt($curl, CURLOPT_POSTFIELDS, $conteudoFormatado);
@@ -158,8 +159,8 @@ function isJson($string) {
           fwrite($arquivo,$log_datahora_ini."$acao"."-http_code->".$info['http_code']."\n");
 
           curl_close($curl); // close cURL handler
-          */
-
+          
+          /** fake
           $curl_response = '{
     "id_requisicao": 3592667,
     "retorno": {
@@ -171,6 +172,7 @@ function isJson($string) {
         "mensagem": "Indicação de confirmação/cancelamento de pagamento recebida com sucesso."
     }
 }';
+        **/
         $result = json_decode($curl_response, true);
         fwrite($arquivo,$log_datahora_ini."$acao"."-SAIDA->".json_encode($result)."\n");
        
