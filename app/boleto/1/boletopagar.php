@@ -4,7 +4,7 @@ $log_datahora_ini = date("dmYHis");
 $acao="boletopagar";  
 $arqlog = "/ws/log/apiboleto_"."$acao".date("dmY").".log";
 $arquivo = fopen($arqlog,"a");
-fwrite($arquivo,"\n".$log_datahora_ini."$acao"."-ENTRADA->".json_encode($jsonEntrada)."\n");
+fwrite($arquivo,"\n\n".$log_datahora_ini."$acao"."-ENTRADA->".json_encode($jsonEntrada)."\n");
 function isJson($string) {
   json_decode($string);
   return json_last_error() === JSON_ERROR_NONE;
@@ -21,7 +21,7 @@ function isJson($string) {
     $valor_movimento = $jsonEntrada->valor_movimento;
 
     //04192993800000200002100100000011594907534039?codigo_estabelecimento=188&tipo_codigo_barras=1
-    $pagamentoEntrada = array(
+    $pagamentoEntrada = json_encode(array(
       "cod_forma_pagamento" => $jsonEntrada->cod_forma_pagamento,
       "valor_movimento"     => $jsonEntrada->valor_movimento,
       "titulo_barra" => array(
@@ -31,10 +31,10 @@ function isJson($string) {
         "cpf_cnpj_pagador_final" => $jsonEntrada->cpf_cnpj_pagador_final,
         "nome_pagador_final" => $jsonEntrada->nome_pagador_final
         )
-      );
+      ));
 
 
-    fwrite($arquivo,$log_datahora_ini."$acao"."-ENTRADAPAGAMENTO->".json_encode($pagamentoEntrada)."\n");
+    fwrite($arquivo,$log_datahora_ini."$acao"."-ENTRADAPAGAMENTO->".$pagamentoEntrada."\n");
 
   if ($hml==true) 
   {
@@ -50,15 +50,15 @@ function isJson($string) {
  
  $curl = curl_init($service_url);
  curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
- curl_setopt($curl, CURLOPT_POSTFIELDS, $conteudoFormatado);
+ curl_setopt($curl, CURLOPT_POSTFIELDS, $pagamentoEntrada);
  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
- //curl_setopt($curl, CURLOPT_HTTPHEADER, array(
- //  'Content-Type: application/json',
- //  'Content-Length: ' . strlen($conteudoFormatado))
- // );
+ curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+   'Content-Type: application/json',
+   'Content-Length: ' . strlen($pagamentoEntrada))
+  );
  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
  $curl_response = curl_exec($curl);
- fwrite($arquivo,$log_datahora_ini."$acao"."-RESPONSE->".json_encode($curl_response)."\n");
+ //fwrite($arquivo,$log_datahora_ini."$acao"."-RESPONSE->".json_encode($curl_response)."\n");
  $info = curl_getinfo($curl);
 
  fwrite($arquivo,$log_datahora_ini."$acao"."-http_code->".$info['http_code']."\n");
@@ -132,28 +132,28 @@ function isJson($string) {
         /* TRANSFORMA EM MODELO PROGRESS */
         $Entrada = (object) $result;
         $Boleto  = (object) $result["retorno"];
-        $confirmacaoEntrada = array(
+        $confirmacaoEntrada = json_encode(array(
           "numero_banrisul" => $Boleto->numero_banrisul,
           "data_pagamento" => $dtPagamento,
-          "cod_forma_pagamento" => $Boleto->cod_forma_pagamento,
+          "cod_forma_pagamento" => $jsonEntrada->cod_forma_pagamento,
           "id_rastreabilidade" => $Boleto->id_rastreabilidade,
           "ind_confirma" => "S",
-          "titulo_barra" => array("tipo_codigo_barras" => 1 )
-        );
+          "titulo_barra" => array("tipo_codigo_barra" => 1 )
+        ));
 
-        fwrite($arquivo,$log_datahora_ini."$acao"."-ENTRADACONFIRMACAO->".json_encode($confirmacaoEntrada)."\n");
+        fwrite($arquivo,$log_datahora_ini."$acao"."-ENTRADACONFIRMACAO->".$confirmacaoEntrada."\n");
           
           $curl = curl_init($service_url);
           curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PATCH");
-          curl_setopt($curl, CURLOPT_POSTFIELDS, $conteudoFormatado);
+          curl_setopt($curl, CURLOPT_POSTFIELDS, $confirmacaoEntrada);
           curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-          //curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-          //  'Content-Type: application/json',
-          //  'Content-Length: ' . strlen($conteudoFormatado))
-          // );
+          curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($confirmacaoEntrada))
+           );
           curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
           $curl_response = curl_exec($curl);
-          fwrite($arquivo,$log_datahora_ini."$acao"."-RESPONSE->".json_encode($curl_response)."\n");
+          //fwrite($arquivo,$log_datahora_ini."$acao"."-RESPONSE->".json_encode($curl_response)."\n");
           $info = curl_getinfo($curl);
 
           fwrite($arquivo,$log_datahora_ini."$acao"."-http_code->".$info['http_code']."\n");
