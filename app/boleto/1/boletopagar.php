@@ -114,7 +114,7 @@ function isJson($string) {
  fwrite($arquivo,$log_datahora_ini."$acao"."-SAIDA->".json_encode($result)."\n");
 
 
-    if (/*$info['http_code']*/ 201==201) {
+    if ($info['http_code']==201) {
     
         // chamada a url de confirmação
         if ($hml==true) 
@@ -177,7 +177,7 @@ function isJson($string) {
         fwrite($arquivo,$log_datahora_ini."$acao"."-SAIDA->".json_encode($result)."\n");
        
        
-        if (/*$info['http_code']*/ 200==200) {
+        if ($info['http_code']==200) {
           $Entrada = (object) $result;
           $Boleto  = (object) $result["retorno"];
           $jsonSaida     =  array("boletopagamento"  => array(
