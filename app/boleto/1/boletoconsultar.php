@@ -107,7 +107,7 @@ function isJson($string) {
  fwrite($arquivo,$log_datahora_ini."$acao"."-SAIDA->".json_encode($result)."\n");
 
 
-    if (/*$info['http_code']*/ 200==200) {
+    if ($info['http_code']==200) {
         /* TRANSFORMA EM MODELO PROGRESS */
         $Entrada = (object) $result;
         $Boleto  = (object) $result["retorno"]["boleto"];
