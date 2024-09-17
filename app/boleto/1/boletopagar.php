@@ -182,7 +182,7 @@ function isJson($string) {
           $Boleto  = (object) $result["retorno"];
           $jsonSaida     =  array("boletopagamento"  => array(
                                         array(
-                                        "retorno" => $result["retorno"]["mensagem"],
+                                        "retorno" => "",
                                         "id_requisicao" => $Entrada->id_requisicao,
                                         "codigo_barras" => $codigo_barras,
                                         "numero_banrisul" => $Boleto->numero_banrisul,
@@ -194,18 +194,18 @@ function isJson($string) {
                                   );
     
         }  else {
-          fwrite($arquivo,$log_datahora_ini."$acao"."-ERRO\n");
+          fwrite($arquivo,$log_datahora_ini."$acao"."-ERRO API CONFIRMACAO\n");
                 $jsonSaida     = array(
                         "boletopagamento"   => array(array(
-                              "retorno" => "boleto confirmar ERRO=".$info['http_code']))
+                              "retorno" => "boleto " . $codigo_barras . " api confirmar ERRO=".$info['http_code']))
                       );
     
         }
       }  else {
-        fwrite($arquivo,$log_datahora_ini."$acao"."-ERRO\n");
+              fwrite($arquivo,$log_datahora_ini."$acao"."-ERRO API pagamento\n");
               $jsonSaida     = array(
                       "boletopagamento"   => array(array(
-                            "retorno" => "boleto pagar ERRO=".$info['http_code']))
+                            "retorno" => "boleto " . $codigo_barras . " api pagar ERRO=".$info['http_code']))
                     );
   
       }
