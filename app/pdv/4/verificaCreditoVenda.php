@@ -1,7 +1,7 @@
 <?php
 
                         $log_datahora_ini = date("dmYHis");
-                        $acao="verificaCreditoVenda_3_";  
+                        $acao="verificaCreditoVenda_4_";  
                         $arqlog = "/ws/log/apipdv_"."$acao".date("dmY").".log";
                         
                         $arquivo = fopen($arqlog,"a");
@@ -42,7 +42,7 @@ if (!isset($dadosEntrada)) {
     $conteudoEntrada= json_encode($jsonEntrada);
     
   
-   $retorno = $progr->executarprogress("pdv/3/verificacreditovenda",$conteudoEntrada,$dlc,$pf,$propath,$progresscfg,$tmp,$proginicial);
+   $retorno = $progr->executarprogress("pdv/4/verificacreditovenda",$conteudoEntrada,$dlc,$pf,$propath,$progresscfg,$tmp,$proginicial);
     
                         fwrite($arquivo,$log_datahora_ini."$acao"."-SAIDA->".$retorno."\n");
                         
