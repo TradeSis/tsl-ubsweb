@@ -37,8 +37,8 @@ function isJson($string) {
     fwrite($arquivo,$log_datahora_ini."$acao"."-ENTRADAPAGAMENTO->".$pagamentoEntrada."\n");
 
   if ($hml==true) 
-  {
-    $service_url = 'http://172.19.130.171:5555/gateway/lb-banrisul-boletos/1.0/pagamentos/11271860000186/boletos/'.$codigo_barras.'?codigo_estabelecimento='.$codestabelecimento.'&nsu='.$nsu; 
+  {               // hml= 172.19.130.171
+    $service_url = 'http://10.2.0.133:5555/gateway/lb-banrisul-boletos/1.0/pagamentos/11271860000186/boletos/'.$codigo_barras.'?codigo_estabelecimento='.$codestabelecimento.'&nsu='.$nsu; 
   } 
   else 
   {
