@@ -16,6 +16,9 @@ if ($metodo=="POST"||$metodo=="GET") {
         case "3": //  Integração ID Biometria Facial 
           include '3/controle.php';
           break;
+         case "4":  
+          include '4/controle.php';
+          break;
        default:
           $jsonSaida = json_decode(json_encode(
              array("status" => 400,
