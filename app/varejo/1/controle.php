@@ -11,20 +11,20 @@ $explode = explode("/",$funcao);
 if ($explode[0]) {
   $funcao = $explode[0];
 }
-if ($explode[1]) {
+if (isset($explode[1])) {
   $parametro2 = $explode[1];
 }
-if ($explode[2]) {
+if (isset($explode[2])) {
   $parametro3 = $explode[2];
 }
 
-/*
-echo "\ncontrole.php\n";
+
+/* echo "\ncontrole.php\n";
 echo "funcao=".$funcao."\n";
 echo "parametro=".$parametro."\n";
 echo "parametro2=".$parametro2."\n";
-echo "parametro3=".$parametro3."\n";
-*/
+echo "parametro3=".$parametro3."\n"; */
+
 
 if ($parametro=="credito-pessoal") {
   $aux=$funcao;
@@ -32,6 +32,11 @@ if ($parametro=="credito-pessoal") {
   $parametro = $aux;
 }
 if ($parametro=="consultarcliente") {
+  $aux=$funcao;
+  $funcao=$parametro;
+  $parametro = $aux;
+}
+if ($parametro=="elegivelRefin") {
   $aux=$funcao;
   $funcao=$parametro;
   $parametro = $aux;
@@ -69,6 +74,9 @@ if ($metodo=="POST"){
       break; 
       case "consultarcliente":
         include 'consultarcliente.php';
+      break; 
+      case "elegivelRefin":
+        include 'elegivelRefin.php';
       break; 
   
       default:
