@@ -8,16 +8,17 @@
 $muda = $funcao;
 $funcao = $parametro;
 $parametro = $muda; 
-
+$parametro2 = null;
+$parametro3 = null;
 $explode = explode("/",$parametro);
 
 if ($explode[0]) {
   $parametro = $explode[0];
 }
-if ($explode[1]) {
+if (isset($explode[1])) {
   $parametro2 = $explode[1];
 } 
-if ($explode[2]) {
+if (isset($explode[2])) {
   $parametro3 = $explode[2];
 }
 
@@ -40,13 +41,13 @@ if ($funcao == "pagamento" || $funcao == "payments") {
   $funcao = "pagamento"; 
 }
 
-
-//echo "2 funcao=".$funcao."\n";
-//echo "2 parametro=".$parametro."\n";
-//echo "2 parametro2=".$parametro2."\n";
-//echo "2 parametro3=".$parametro3."\n";
-//echo "2 metodo=".$metodo."\n";
-
+/*
+echo "2 funcao=".$funcao."\n";
+echo "2 parametro=".$parametro."\n";
+echo "2 parametro2=".$parametro2."\n";
+echo "2 parametro3=".$parametro3."\n";
+echo "2 metodo=".$metodo."\n";
+*/
 
 
 if ($metodo=="GET"){

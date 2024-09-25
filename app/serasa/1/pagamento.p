@@ -46,7 +46,7 @@ def temp-table ttentrada no-undo serialize-name "dadosEntrada"   /* JSON ENTRADA
 def temp-table ttpagamento  no-undo serialize-name "pagamento"  /* JSON SAIDA */
     field offerId   as CHAR serialize-name "offerId"
     field agreementId   as CHAR serialize-name "agreementId"
-    field dueDate   as CHAR serialize-name "dueDate"
+    field dueDate   as DATE serialize-name "dueDate"
     field instalment   as dec serialize-name "instalment"
     field instalmentValue   as dec serialize-name "instalmentValue"
     field paymentMethod   as CHAR serialize-name "paymentMethod"
@@ -80,20 +80,207 @@ then do:
 end.
 
 
+def var ptpnegociacao as char.
+def var par-clicod like clien.clicod.
+def var vmessage as log.
+
+find neuclien where neuclien.cpf = dec(ttentrada.document) no-lock no-error.
+if not avail neuclien
+then do:
+     find first clien where clien.ciccgc = ttentrada.document no-lock no-error.
+end.
+else do:
+     find clien where clien.clicod = neuclien.clicod no-lock no-error.
+end.
+if not avail clien
+then do:
+     create ttsaida.
+     ttsaida.tstatus = 400.
+     ttsaida.descricaoStatus = "Dados de Entrada Invalidos".
+
+     hsaida  = temp-table ttsaida:handle.
+
+     lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+     message string(vlcSaida).
+     return.
+end.
+ptpnegociacao = "SERASA".
+vmessage = no.
+
+{acha.i}
+{aco/acordo.i new} 
+
+def var vdtvencimento as date.
+def var vvalor        as dec.
+DEF VAR vjuros AS DEC.
+
+find aconegcli where aconegcli.clicod = clien.clicod and
+                     aconegcli.id     = ttentrada.offerId 
+   no-error.
+if not avail aconegcli
+then do:
+   create ttsaida.
+   ttsaida.tstatus = 400.
+   ttsaida.descricaoStatus = "Oferta Invalida".
+
+   hsaida  = temp-table ttsaida:handle.
+
+   lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+   message string(vlcSaida).
+   return.
+
+end.        
+else do:
+    if aconegcli.idacordo = ?
+    then do:
+       create ttsaida.
+       ttsaida.tstatus = 400.
+       ttsaida.descricaoStatus = "Oferta Sem Acordo ".
+    
+       hsaida  = temp-table ttsaida:handle.
+    
+       lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+       message string(vlcSaida).
+       return.
+    end.
+    if aconegcli.idacordo <> int(ttentrada.agreementId)
+    then do:
+       create ttsaida.
+       ttsaida.tstatus = 400.
+       ttsaida.descricaoStatus = "Acordo não corresponde ".
+    
+       hsaida  = temp-table ttsaida:handle.
+    
+       lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+       message string(vlcSaida).
+       return.
+    end.
+
+end.
+
+
+if ttentrada.paymentMethod <> "boleto"
+then do:
+    create ttsaida.
+       ttsaida.tstatus = 400.
+       ttsaida.descricaoStatus = "Metodo de Pagamento Invalido".
+    
+       hsaida  = temp-table ttsaida:handle.
+    
+       lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+       message string(vlcSaida).
+       return.
+end.
+DEF VAR par-recid-boleto AS RECID.
+DEF VAR vstatus AS CHAR.
+DEF VAR vmensagem_erro AS CHAR.
+find aoacordo where aoacordo.idacordo = aconegcli.idacordo  no-lock.
+find AoAcParcela of aoacordo where AoAcParcela.Parcela = int(ttentrada.instalment) no-lock no-error.
+if not avail AoAcParcela
+then do:
+    create ttsaida.
+       ttsaida.tstatus = 400.
+       ttsaida.descricaoStatus = "Parcela invalida".
+    
+       hsaida  = temp-table ttsaida:handle.
+    
+       lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+       message string(vlcSaida).
+       return.
+end.
+
+run bol/geradadosboleto.p (
+      input 104, /* Banco do Boleto */
+      input ?,      /* Bancarteira especifico */
+      input "SERASA",
+      input clien.clicod,
+      input "Acordo: " + string(aoacordo.idacordo),
+      input aoacparcela.DtVencimento,
+      input aoacparcela.VlCobrado,
+      input 0,
+      output par-recid-boleto,
+      output vstatus,
+      output vmensagem_erro).
+
+find banBoleto where recid(banBoleto) = par-recid-boleto no-lock
+      no-error.
+if not avail banboleto
+then do:
+    create ttsaida.
+       ttsaida.tstatus = 400.
+       ttsaida.descricaoStatus = "Erro na geralcao do Boleto".
+    
+       hsaida  = temp-table ttsaida:handle.
+    
+       lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+       message string(vlcSaida).
+       return.
+end.
+
 
 create ttpagamento. 
-ttpagamento.offerId = "8d4b3cc7-5020-4c57-aa76-52eb9f28ab2a".
-ttpagamento.agreementId = "123456".
-ttpagamento.dueDate = "2024-08-19".
-ttpagamento.instalment = 1.
-ttpagamento.instalmentValue = 400.55.
-ttpagamento.paymentMethod = "pix".
-ttpagamento.barCode = "890380038252042154496331179319333330979032437256".
-ttpagamento.digitLine = "770098015294047064053168524816282381253613215287".
-ttpagamento.vbase64 = "JVBERi0xLjQNCiWqq6ytD[generic_base64]==".
-ttpagamento.pixCode = "00020126360014BR.GOV.BCB.PIX01143690558600018052040000530398654074000.005802BR5912QA TEST LTDA6009SAO PAULO62160512PAGAMENTO1QA6304EF69".
-ttpagamento.qrCode = "983874277584054862353623720346605218569864170938".
+ttpagamento.offerId = aconegcli.id.
+ttpagamento.agreementId = string(aoacordo.idacordo).
+ttpagamento.dueDate = aoacparcela.DtVencimento.
+ttpagamento.instalment = aoacparcela.parcela.
+ttpagamento.instalmentValue = aoacparcela.VlCobrado.
+ttpagamento.paymentMethod = ttentrada.paymentMethod.
 
+run bol/geradadosboleto.p (
+      input 104, /* Banco do Boleto */
+      input ?,      /* Bancarteira especifico */
+      input "SERASA",
+      input clien.clicod,
+      input "Acordo: " + string(aoacordo.idacordo),
+      input aoacparcela.DtVencimento,
+      input aoacparcela.VlCobrado,
+      input 0,
+      output par-recid-boleto,
+      output vstatus,
+      output vmensagem_erro).
+
+find banBoleto where recid(banBoleto) = par-recid-boleto no-lock
+      no-error.
+      
+      if banboleto.bancod = 104
+      then do:
+          run api/barramentoemitir.p 
+                  (recid(banboleto),  
+                      output vstatus , 
+                      output vmensagem_erro).
+          if vstatus <> "S"
+          then do:
+            create ttsaida.
+            ttsaida.tstatus = 500.
+            ttsaida.descricaoStatus = vmensagem_erro.
+          end.
+      end.
+      else do:
+        create ttsaida.
+        ttsaida.tstatus = 500.
+        ttsaida.descricaoStatus = "BANCO NAO HOMOLOGADO".
+        vstatus = "N".
+      end.
+
+      
+      run bol/vinculaboleto.p (
+            input recid(banBoleto),
+            input ptpnegociacao,
+            input "idacordo,parcela",
+            input string(aoacparcela.idacordo) + "," +
+                    string(aoacparcela.parcela),
+            input AoAcParcela.VlCobrado,
+            OUTPUT vstatus,
+            output vmensagem_erro).      
+
+ttpagamento.barCode = banboleto.codigoBarras.
+ttpagamento.digitLine = banboleto.linhaDigitavel.
+
+/*ttpagamento.vbase64 = "JVBERi0xLjQNCiWqq6ytD[generic_base64]==".*/
+/*
+*ttpagamento.pixCode = "00020126360014BR.GOV.BCB.PIX01143690558600018052040000530398654074000.005802BR5912QA TEST LTDA6009SAO PAULO62160512PAGAMENTO1QA6304EF69".
+*ttpagamento.qrCode = "983874277584054862353623720346605218569864170938".
+*/
 
 
 hsaida  = TEMP-TABLE ttpagamento:handle.

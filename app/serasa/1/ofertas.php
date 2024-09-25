@@ -28,24 +28,30 @@ $progr = new chamaprogress();
 fwrite($arquivo, $identificacao . "-CONTEUDO->" . json_encode($conteudoEntrada) . "\n");
 
 $retorno = $progr->executarprogress("serasa/1/ofertas", $conteudoEntrada, $dlc, $pf, $propath, $progresscfg, $tmp, $proginicial);
+fwrite($arquivo, $identificacao . "-retorno->" . json_encode($retorno) . "\n");
 
-$conteudoSaida  = (object) json_decode($retorno,true);
-$offers    = $conteudoSaida->JSON["offers"]; 
+  $dados = json_decode($retorno,true);
+  if (isset($dados["conteudoSaida"][0])) { // Conteudo Saida - Caso de erro
+      $dados = $dados["conteudoSaida"][0];
+      $jsonSaida = $dados;
+  } else {
+        $conteudoSaida  = (object) json_decode($retorno,true);
+      $offers    = $conteudoSaida->JSON["offers"]; 
 
-$acordo = array();
-$novoarray = array();
-foreach ($offers  as $instalment ) {
+      $acordo = array();
+      $novoarray = array();
+      foreach ($offers  as $instalment ) {
 
-    $instalment["debts"][0]["company"] = $instalment["debts"][0]["company"][0];
-    $instalment["debts"][0]["companyOrigin"] = $instalment["debts"][0]["companyOrigin"][0];
+          $instalment["debts"][0]["company"] = $instalment["debts"][0]["company"][0];
+          $instalment["debts"][0]["companyOrigin"] = $instalment["debts"][0]["companyOrigin"][0];
 
-  array_push($novoarray, $instalment);
-  
-}
+        array_push($novoarray, $instalment);
+        
+      }
 
-$acordo["offers"] = $novoarray;
+      $acordo["offers"] = $novoarray;
 
-$jsonSaida = $acordo;
-
+      $jsonSaida = $acordo;
+  }
 
 fclose($arquivo);

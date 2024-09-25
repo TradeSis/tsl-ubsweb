@@ -10,7 +10,7 @@ def temp-table ttentrada no-undo serialize-name "dadosEntrada"   /* JSON ENTRADA
    field document        as char 
    field offer_id         as char.
 
-DEF TEMP-TABLE ttnegociacao NO-UNDO serialize-name "negociacao"
+DEF TEMP-TABLE ttoffers NO-UNDO serialize-name "offers"
    FIELD offerId AS CHAR
    FIELD vtype AS CHAR serialize-name "type".
    
@@ -23,7 +23,7 @@ DEF TEMP-TABLE ttinstalments NO-UNDO serialize-name "instalments"
    FIELD instalment AS DEC.
 
 DEF TEMP-TABLE ttdueDate NO-UNDO SERIALIZE-NAME "dueDate"
-   FIELD dueDate AS CHAR
+   FIELD dueDate AS date
    field idpai as char serialize-hidden.
 
 DEF TEMP-TABLE ttvalues NO-UNDO SERIALIZE-NAME "values"
@@ -43,7 +43,7 @@ DEF TEMP-TABLE tttaxes NO-UNDO serialize-name "taxes"
    field idpai as char serialize-hidden.
    
 DEF DATASET dsNegociacao  SERIALIZE-NAME "JSON" 
-   FOR ttnegociacao, ttinstalments, ttdueDate, ttvalues, tttaxes
+   FOR ttoffers, ttinstalments, ttdueDate, ttvalues, tttaxes
    DATA-RELATION for1 FOR ttinstalments, ttdueDate    RELATION-FIELDS(ttinstalments.id,ttdueDate.idpai) NESTED
    DATA-RELATION for2 FOR ttinstalments, ttvalues    RELATION-FIELDS(ttinstalments.id,ttvalues.idpai) NESTED
    DATA-RELATION for3 FOR ttinstalments, tttaxes    RELATION-FIELDS(ttinstalments.id,tttaxes.idpai) NESTED.
@@ -52,7 +52,7 @@ def temp-table ttsaida  no-undo serialize-name "conteudoSaida"  /* JSON SAIDA CA
     field tstatus        as int serialize-name "status"
     field descricaoStatus      as char.
 
-
+def var vdata as date.
 hEntrada = temp-table ttentrada:HANDLE.
 lokJSON = hentrada:READ-JSON("longchar",vlcentrada, "EMPTY") no-error.
 
@@ -71,72 +71,126 @@ then do:
 end.
 
 
-CREATE ttnegociacao.
-ttnegociacao.offerId = "8d4b3cc7-5020-4c57-aa76-52eb9f28ab2a".
-ttnegociacao.vtype = "EQUALS".
 
-CREATE ttinstalments.
-ttinstalments.id = "1".
-ttinstalments.vtotal = 300.
-ttinstalments.totalWithoutInterest = 300.
-ttinstalments.discountValue = 100.
-ttinstalments.discountPercentage = 25.
-ttinstalments.instalment = 1.
+def var ptpnegociacao as char.
+def var par-clicod like clien.clicod.
+def var vmessage as log.
 
-CREATE ttinstalments.
-ttinstalments.id = "2".
-ttinstalments.vtotal = 200.
-ttinstalments.totalWithoutInterest = 200.
-ttinstalments.discountValue = 200.
-ttinstalments.discountPercentage = 20.
-ttinstalments.instalment = 2.
+find neuclien where neuclien.cpf = dec(ttentrada.document) no-lock no-error.
+if not avail neuclien
+then do:
+     find first clien where clien.ciccgc = ttentrada.document no-lock no-error.
+end.
+else do:
+     find clien where clien.clicod = neuclien.clicod no-lock no-error.
+end.
+if not avail clien
+then do:
+     create ttsaida.
+     ttsaida.tstatus = 400.
+     ttsaida.descricaoStatus = "Dados de Entrada Invalidos".
+
+     hsaida  = temp-table ttsaida:handle.
+
+     lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+     message string(vlcSaida).
+     return.
+end.
+ptpnegociacao = "SERASA".
+vmessage = no.
+
+{acha.i}
+{aco/acordo.i new} 
+
+find aconegcli where aconegcli.clicod = clien.clicod and
+                     aconegcli.id     = ttentrada.offer_id
+   no-lock no-error.
+if not avail aconegcli
+then do:
+   create ttsaida.
+   ttsaida.tstatus = 400.
+   ttsaida.descricaoStatus = "Oferta Invalida".
+
+   hsaida  = temp-table ttsaida:handle.
+
+   lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+   message string(vlcSaida).
+   return.
+
+end.                        
+else do:
+   if aconegcli.idacordo <> ?
+   then do:
+      create ttsaida.
+      ttsaida.tstatus = 400.
+      ttsaida.descricaoStatus = "Oferta Possui acordo " + string(aconegcli.idacordo).
+   
+      hsaida  = temp-table ttsaida:handle.
+   
+      lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+      message string(vlcSaida).
+      return.
+   end.
+end.
+
+    FIND aconegoc WHERE aconegoc.negcod = aconegcli.negcod NO-LOCK.
+    run calcelegiveis (input ptpnegociacao, input clien.clicod, aconegcli.negcod).
+    
+    FIND FIRST ttnegociacao where ttnegociacao.negcod = aconegcli.negcod.
+    CREATE ttoffers.
+    ttoffers.offerId = aconegcli.id.
+    ttoffers.vtype = "EQUALS".
+    FIND aconegoc WHERE aconegoc.negcod = aconegcli.negcod NO-LOCK.
+    run montacondicoes (INPUT aconegoc.negcod, ?).
+    
+    for each ttcondicoes.
+        find acoplanos where 
+                            acoplanos.negcod  = aconegcli.negcod and
+                            acoplanos.placod  = ttcondicoes.placod
+                            no-lock.
+
+        ttcondicoes.perc_desc = acoplanos.perc_desc.
+        ttcondicoes.perc_acres = acoplanos.perc_acres. 
+        ttcondicoes.calc_juro = acoplanos.calc_juro.
+        ttcondicoes.qtd_vezes = acoplanos.qtd_vezes. 
+        ttcondicoes.dias_max_primeira = acoplanos.dias_max_primeira.
+
+        CREATE ttinstalments.
+        ttinstalments.id = string(ttcondicoes.placod).
+        ttinstalments.vtotal = ttcondicoes.vlr_acordo.
+        /*
+        ttinstalments.totalWithoutInterest = 300.
+        ttinstalments.discountValue = 100.
+        ttinstalments.discountPercentage = 25.
+        */
+        ttinstalments.instalment = ttcondicoes.qtd_vezes.
+
+         do vdata = today to today + 2.
+            CREATE ttdueDate.
+            ttdueDate.dueDate = vdata.
+            ttdueDate.idpai = ttinstalments.id.
+         end.
+         for each ttparcelas where ttparcelas.negcod = ttnegociacao.negcod and
+                  ttparcelas.placod = ttcondicoes.placod.
+               CREATE ttvalues.
+               ttvalues.vvalue = ttparcelas.vlr_parcela.
+               ttvalues.vtotal = ttparcelas.vlr_parcela.
+               ttvalues.idpai = ttinstalments.id.
+         end.      
+         CREATE tttaxes.
+         tttaxes.iof_percentage = 0.
+         tttaxes.iof_totalValue = 0.
+         tttaxes.cet_yearPercentage = 0.
+         tttaxes.cet_monthPercentage = 0.
+         tttaxes.cet_totalValue = 0.
+         tttaxes.interest_yearPercentage = 0.
+         tttaxes.interest_monthPercentage = 0.
+         tttaxes.interest_totalValue = 0.
+         tttaxes.idpai = ttinstalments.id.
+         
+    end.
 
 
-CREATE ttdueDate.
-ttdueDate.dueDate = "2024-08-19".
-ttdueDate.idpai = "1".
-
-CREATE ttdueDate.
-ttdueDate.dueDate = "2024-08-20".
-ttdueDate.idpai = "1".
-
-CREATE ttdueDate.
-ttdueDate.dueDate = "2024-08-21".
-ttdueDate.idpai = "1".
-
-
-CREATE ttdueDate.
-ttdueDate.dueDate = "2024-08-10".
-ttdueDate.idpai = "2".
-
-CREATE ttdueDate.
-ttdueDate.dueDate = "2024-08-11".
-ttdueDate.idpai = "2".
-
-CREATE ttdueDate.
-ttdueDate.dueDate = "2024-08-12".
-ttdueDate.idpai = "2".
-
-CREATE ttvalues.
-ttvalues.vvalue = 300.
-ttvalues.vtotal = 300.
-ttvalues.idpai = "1".
-
-CREATE ttvalues.
-ttvalues.vvalue = 222.
-ttvalues.vtotal = 222.
-ttvalues.idpai = "2".
-
-CREATE tttaxes.
-tttaxes.iof_percentage = 50.
-tttaxes.iof_totalValue = 11.
-tttaxes.cet_yearPercentage = 0.
-tttaxes.cet_monthPercentage = 0.
-tttaxes.cet_totalValue = 0.
-tttaxes.interest_yearPercentage = 0.
-tttaxes.interest_monthPercentage = 0.
-tttaxes.interest_totalValue = 0.
-tttaxes.idpai = "1".
 
 
 hsaida =  DATASET dsNegociacao:HANDLE.
