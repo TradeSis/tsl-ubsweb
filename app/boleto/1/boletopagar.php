@@ -118,8 +118,8 @@ function isJson($string) {
     
         // chamada a url de confirmação
         if ($hml==true) 
-        {
-          $service_url = 'http://172.19.130.171:5555/gateway/lb-banrisul-boletos/1.0/pagamentos/11271860000186/boletos/'.$codigo_barras.'?codigo_estabelecimento='.$codestabelecimento; 
+        {                        // 172.19.130.171
+          $service_url = 'http://10.2.0.133:5555/gateway/lb-banrisul-boletos/1.0/pagamentos/11271860000186/boletos/'.$codigo_barras.'?codigo_estabelecimento='.$codestabelecimento; 
         } 
         else 
         {
@@ -142,6 +142,7 @@ function isJson($string) {
         ));
 
         fwrite($arquivo,$log_datahora_ini."$acao"."-ENTRADACONFIRMACAO->".$confirmacaoEntrada."\n");
+        fwrite($arquivo,$log_datahora_ini."$acao"."-METODO->PATCH\n");
           
           $curl = curl_init($service_url);
           curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PATCH");
