@@ -38,7 +38,7 @@ function isJson($string) {
 
   if ($hml==true) 
   {               // hml= 172.19.130.171
-    $service_url = 'http://10.2.0.133:5555/gateway/lb-banrisul-boletos/1.0/pagamentos/11271860000186/boletos/'.$codigo_barras.'?codigo_estabelecimento='.$codestabelecimento.'&nsu='.$nsu; 
+    $service_url = 'http://172.19.130.171:5555/gateway/lb-banrisul-boletos/1.0/pagamentos/11271860000186/boletos/'.$codigo_barras.'?codigo_estabelecimento='.$codestabelecimento.'&nsu='.$nsu; 
   } 
   else 
   {
@@ -119,7 +119,7 @@ function isJson($string) {
         // chamada a url de confirmação
         if ($hml==true) 
         {                        // 172.19.130.171
-          $service_url = 'http://10.2.0.133:5555/gateway/lb-banrisul-boletos/1.0/pagamentos/11271860000186/boletos/'.$codigo_barras.'?codigo_estabelecimento='.$codestabelecimento; 
+          $service_url = 'http://172.19.130.171:5555/gateway/lb-banrisul-boletos/1.0/pagamentos/11271860000186/boletos/'.$codigo_barras.'?codigo_estabelecimento='.$codestabelecimento; 
         } 
         else 
         {
