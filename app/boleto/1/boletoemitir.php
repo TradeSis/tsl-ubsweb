@@ -38,7 +38,7 @@ function isJson($string) {
                                 );
     fwrite($arquivo,$log_datahora_ini."$acao"."-FORMATADO->".$conteudoFormatado."\n");
 
-  if ($hml==true) {$service_url = 'http://10.2.0.133:5555/gateway/lb-banrisul-boletos/1.0/cobranca/11271860000186/boletos/emite-boleto-simplificado'; } 
+  if ($hml==true) {$service_url = 'http://172.19.130.171:5555/gateway/lb-banrisul-boletos/1.0/cobranca/11271860000186/boletos/emite-boleto-simplificado'; } 
              else {$service_url = 'http://10.2.0.133:5555/gateway/lb-banrisul-boletos/1.0/cobranca/11271860000186/boletos/emite-boleto-simplificado';
 }
  fwrite($arquivo,$log_datahora_ini."$acao"."-HML->".json_encode($hml)."\n");
