@@ -48,8 +48,9 @@ $dados = json_decode($retorno,true);
 
         $dueDatenovo = array();
         // Transformar em lista
+        
         foreach ($instalment["dueDate"] as $item) {
-          list("dueDate" => $dueDate) = $item;
+          $dueDate = $item["dueDate"];
           array_push($dueDatenovo, $dueDate);
         }
         // remover o objeto dueDate
