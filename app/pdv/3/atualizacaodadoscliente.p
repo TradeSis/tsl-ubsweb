@@ -1243,7 +1243,7 @@ def var vnaturconj as char.
         
     if testavalido(atualizacaodadoscliente.documentos_apresentados_rf3)
     then clien.entendereco[3] = 
-                        atualizacaodadoscliente.documentos_apresentados_rf3.
+                        removeacento(atualizacaodadoscliente.documentos_apresentados_rf3).
 
     if testavalido(atualizacaodadoscliente.nota)
     then cpclien.var-int3 = int(atualizacaodadoscliente.nota) no-error.
