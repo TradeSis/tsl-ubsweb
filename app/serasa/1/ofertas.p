@@ -115,6 +115,20 @@ then do:
      message string(vlcSaida).
      return.
 end.
+
+find serasacli where serasacli.clicod = clien.clicod no-lock no-error.
+if not avail serasacli
+then do:
+     create ttsaida.
+     ttsaida.tstatus = 400.
+     ttsaida.descricaoStatus = "Nao encontrado na base".
+
+     hsaida  = temp-table ttsaida:handle.
+
+     lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+     message string(vlcSaida).
+     return.
+end.
 ptpnegociacao = "SERASA".
 vmessage = no.
 
