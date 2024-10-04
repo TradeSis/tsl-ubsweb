@@ -174,7 +174,22 @@ end.
 DEF VAR par-recid-boleto AS RECID.
 DEF VAR vstatus AS CHAR.
 DEF VAR vmensagem_erro AS CHAR.
-find aoacordo where aoacordo.idacordo = aconegcli.idacordo  no-lock.
+find aoacordo where aoacordo.idacordo = aconegcli.idacordo AND 
+                    aoacordo.dtcanc <> ?  
+                    no-lock no-error.
+if not avail aoacordo
+then do:
+    create ttsaida.
+        ttsaida.tstatus = 400.
+        ttsaida.descricaoStatus = "Nao pode pagar".
+    
+        hsaida  = temp-table ttsaida:handle.
+    
+        lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+        message string(vlcSaida).
+        return.
+end.
+
 find AoAcParcela of aoacordo where AoAcParcela.Parcela = int(ttentrada.instalment) no-lock no-error.
 if not avail AoAcParcela
 then do:
