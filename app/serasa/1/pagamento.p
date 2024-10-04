@@ -174,14 +174,13 @@ end.
 DEF VAR par-recid-boleto AS RECID.
 DEF VAR vstatus AS CHAR.
 DEF VAR vmensagem_erro AS CHAR.
-find aoacordo where aoacordo.idacordo = aconegcli.idacordo AND 
-                    aoacordo.dtcanc <> ?  
-                    no-lock no-error.
-if not avail aoacordo
+find aoacordo where aoacordo.idacordo = aconegcli.idacordo no-lock.
+
+if aoacordo.dtcanc <> ?
 then do:
     create ttsaida.
         ttsaida.tstatus = 400.
-        ttsaida.descricaoStatus = "Nao pode pagar".
+        ttsaida.descricaoStatus = "Acordo Cancelado, não pode pagar".
     
         hsaida  = temp-table ttsaida:handle.
     
