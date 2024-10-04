@@ -53,12 +53,58 @@ then do:
     return.
 end.
 
+find neuclien where neuclien.cpf = dec(ttentrada.document) no-lock no-error.
+if not avail neuclien
+then do:
+     find first clien where clien.ciccgc = ttentrada.document no-lock no-error.
+end.
+else do:
+     find clien where clien.clicod = neuclien.clicod no-lock no-error.
+end.
+if not avail clien
+then do:
+     create ttsaida.
+     ttsaida.tstatus = 400.
+     ttsaida.descricaoStatus = "Dados de Entrada Invalidos".
+
+     hsaida  = temp-table ttsaida:handle.
+
+     lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+     message string(vlcSaida).
+     return.
+end.
 
 
-create ttcancelaacordo. 
-ttcancelaacordo.offerId = "8d4b3cc7-5020-4c57-aa76-52eb9f28ab2a".
-ttcancelaacordo.vstatus = true.
-ttcancelaacordo.vmessage = "[PT] Acordo cancelado [EN] Deal canceled. ".
+find aconegcli where aconegcli.clicod   = clien.clicod and
+                     aconegcli.id       = ttentrada.offerId and
+                     aconegcli.idacordo = int(ttentrada.agreementId)
+   no-error.
+if not avail aconegcli
+then do:
+   create ttsaida.
+   ttsaida.tstatus = 400.
+   ttsaida.descricaoStatus = "Oferta Invalida".
+
+   hsaida  = temp-table ttsaida:handle.
+
+   lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+   message string(vlcSaida).
+   return.
+
+end.   
+
+find aoacordo of aconegcli NO-ERROR.
+if avail aoacordo
+then do:
+    aoacordo.dtcanc = TODAY.
+    aoacordo.Situacao = "C".
+    
+    create ttcancelaacordo. 
+    ttcancelaacordo.offerId = aconegcli.id.
+    ttcancelaacordo.vstatus = true.
+    ttcancelaacordo.vmessage = "[PT] Acordo cancelado [EN] Deal canceled. ".
+end.
+
 
 
 hsaida  = TEMP-TABLE ttcancelaacordo:handle.
