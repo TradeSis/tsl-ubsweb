@@ -36,7 +36,7 @@ if ($parametro=="consultarcliente") {
   $funcao=$parametro;
   $parametro = $aux;
 }
-if ($parametro=="elegivelRefin") {
+if ($parametro=="elegivelrefin") {
   $aux=$funcao;
   $funcao=$parametro;
   $parametro = $aux;
@@ -75,8 +75,8 @@ if ($metodo=="POST"){
       case "consultarcliente":
         include 'consultarcliente.php';
       break; 
-      case "elegivelRefin":
-        include 'elegivelRefin.php';
+      case "elegivelrefin":
+        include 'elegivelrefin.php';
       break; 
   
       default:

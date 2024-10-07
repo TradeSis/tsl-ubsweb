@@ -1,9 +1,9 @@
 <?php
 $log_datahora_ini = date("dmYHis");
-$acao="elegivelRefin";  
+$acao="elegivelrefin";  
 $mypid = getmypid();
 $identificacao=$log_datahora_ini."-PID".$mypid."-"."$acao";
-$arqlog = "/ws/log/apivarejo_elegivelRefin_".date("dmY").".log";
+$arqlog = "/ws/log/apivarejo_elegivelrefin_".date("dmY").".log";
 $arquivo = fopen($arqlog,"a");
 function isJson($string) {
   json_decode($string);
@@ -20,7 +20,7 @@ $conteudoEntrada=json_encode(array('dadosEntrada' => array(array(
 
  //echo $conteudoEntrada;
       fwrite($arquivo,$identificacao."-ENTRADAFORMATADO->".json_encode($conteudoEntrada)."\n");
-      $retorno = $progr->executarprogress("varejo/1/elegivelRefin",$conteudoEntrada,$dlc,$pf,$propath,$progresscfg,$tmp,$proginicial);
+      $retorno = $progr->executarprogress("varejo/1/elegivelrefin",$conteudoEntrada,$dlc,$pf,$propath,$progresscfg,$tmp,$proginicial);
       fwrite($arquivo,$identificacao."-SAIDA->".$retorno."\n");
       if (isset($dados["conteudoSaida"][0])) { // Conteudo Saida - Caso de erro
         $dados = $dados["conteudoSaida"][0];
