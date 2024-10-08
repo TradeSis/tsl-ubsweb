@@ -11,10 +11,10 @@ $explode = explode("/",$funcao);
 if ($explode[0]) {
   $funcao = $explode[0];
 }
-if ($explode[1]) {
+if (isset($explode[1])) {
   $parametro2 = $explode[1];
 }
-if ($explode[2]) {
+if (isset($explode[2])) {
   $parametro3 = $explode[2];
 }
 
@@ -45,6 +45,10 @@ if ($funcao=="credito-pessoal"&&$parametro2=="gera-contnum") {
   $funcao=$funcao."/".$parametro2;
   $parametro2 = "";
 }
+if ($parametro=="insertEP") {
+  $funcao=$parametro;
+  $parametro = "";
+}
 
 /*
 echo "\napostratar\n";
@@ -69,6 +73,9 @@ if ($metodo=="POST"){
       break; 
       case "consultarcliente":
         include 'consultarcliente.php';
+      break; 
+       case "insertEP":
+        include 'insertep.php';
       break; 
   
       default:
