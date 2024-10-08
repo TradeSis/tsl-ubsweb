@@ -171,7 +171,7 @@ if(isset($ex[1])){
 
 /**/
 $hml=false;
-if ($_SERVER['SERVER_ADDR']=="10.145.0.233"||$_SERVER['SERVER_ADDR']=="10.145.0.44") {
+if ($_SERVER['SERVER_ADDR']=="10.145.0.233"||$_SERVER['SERVER_ADDR']=="10.145.0.44"||$_SERVER['SERVER_ADDR']=="10.145.0.22") {
   $hml = true;
 }
 
