@@ -21,9 +21,10 @@ def var hsaida   as handle.
 def var lokJSON as log. 
 
 def temp-table ttentrada no-undo serialize-name "dadosEntrada"
-    field cpfCnpj as char.
+    field clicod like clien.clicod
+    field cpfCnpj like clien.ciccgc.
 
-def temp-table ttcontrato no-undo serialize-name "contato"
+def temp-table ttcontrato no-undo serialize-name "contrato"
   field numeroContrato as INT 
   field dataEmissao as DATE
   field saldoDevedorPrincipal as dec 
@@ -33,6 +34,19 @@ def temp-table ttcontrato no-undo serialize-name "contato"
   field qtdParcelas as INT 
   field qtdParcelasAbertas as int 
   field proximoVencimento as date.
+ 
+DEF TEMP-TABLE ttcliente NO-UNDO SERIALIZE-NAME "cliente"
+    FIELD clicod LIKE clien.clicod
+    FIELD clinom LIKE clien.clinom
+    FIELD ciccgc LIKE clien.ciccgc
+    FIELD etbcad LIKE clien.etbcad.
+    
+def temp-table ttsaida  no-undo serialize-name "conteudoSaida"  /* JSON SAIDA CASO ERRO */
+    field tstatus        as int serialize-name "status"
+    field descricaoStatus      as char.
+    
+DEF DATASET dsContrato SERIALIZE-HIDDEN
+  FOR ttcliente, ttcontrato.
 
 
 def var vdias as int init 0.
@@ -50,29 +64,67 @@ DEF VAR vproximoVencimento AS DATE.
 DEF VAR vvalorParcelaComAcrescimo AS DEC.
 
 DEF VAR json AS CHAR.
-
+def var vcpfCnpj as char.
+def var vclicod as INT.
 
 hEntrada = temp-table ttentrada:HANDLE.
 lokJSON = hentrada:READ-JSON("longchar",vlcentrada, "EMPTY").
 
-find first ttentrada no-error.
-if not avail ttentrada
+find first ttentrada.
+IF ttentrada.clicod = ? AND ttentrada.cpfCnpj = ?
 then do:
-  return.
-end.
-  
+    create ttsaida.
+    ttsaida.tstatus = 400.
+    ttsaida.descricaoStatus = "Dados de Entrada nao encontrados".
 
-find neuclien where neuclien.cpf = dec(ttentrada.cpfCnpj) no-lock no-error.
-if not avail neuclien
+    hsaida  = temp-table ttsaida:handle.
+
+    lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+    message string(vlcSaida).
+    return.
+end.
+
+if ttentrada.clicod = 0
 then do:
-     find first clien where clien.ciccgc = ttentrada.cpfCnpj no-lock no-error.
+  vclicod = ?.
 end.
-else do:
-     find clien where clien.clicod = neuclien.clicod no-lock no-error.
-end.
+ELSE DO:
+  vclicod = ttentrada.clicod.
+END.
+
+IF vclicod <> ?  
+THEN DO:
+   FIND clien WHERE clien.clicod = vclicod NO-LOCK NO-ERROR.    
+END.
+ELSE DO:
+    find neuclien where neuclien.cpf = dec(ttentrada.cpfCnpj) no-lock no-error.
+    if not avail neuclien
+    then do:
+         find first clien where clien.ciccgc = ttentrada.cpfCnpj no-lock no-error.
+    end.
+    else do:
+         find clien where clien.clicod = neuclien.clicod no-lock no-error.
+    end. 
+END.
+
 if not avail clien
 then do:
+  create ttsaida.
+  ttsaida.tstatus = 400.
+  ttsaida.descricaoStatus = "Cliente nao encontrado".
+
+  hsaida  = temp-table ttsaida:handle.
+
+  lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+  message string(vlcSaida).
   return.
+end.
+else do:
+  CREATE ttcliente.
+  ttcliente.clicod = clien.clicod.
+  ttcliente.clinom = clien.clinom.
+  ttcliente.ciccgc = clien.ciccgc.
+  ttcliente.etbcad = clien.etbcad.
 end.
 
 tdias = 0.
@@ -83,8 +135,7 @@ if avail rfnparam
 then do:
  
     for each contrato of clien no-lock.
-      /*disp contrato.contnum format ">>>>>>>>>9" contrato.modcod contrato.dtinicial.*/
-        
+      
         vtitvlpag = 0.
         vpercpag  = 0.
         velegivel-contrato = yes.
@@ -202,15 +253,23 @@ then do:
     
 end. /* rfnparam */
 
+
 find first ttcontrato no-error.
 if not avail ttcontrato
 then do:
-    json = "Nenhum contrato selecionado".
-    MESSAGE string(json).
+    create ttsaida.
+    ttsaida.tstatus = 400.
+    ttsaida.descricaoStatus = "Nenhum contrato selecionado".
+
+    hsaida  = temp-table ttsaida:handle.
+
+    lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+    message string(vlcSaida).
     return.
 end.
 else do:
-    hsaida  = temp-table ttcontrato:handle.
+    hsaida =  DATASET dsContrato:HANDLE.
+    
     lokJson = hSaida:WRITE-JSON("LONGCHAR", vlcsaida, TRUE) no-error.
     if lokJson
     then do:

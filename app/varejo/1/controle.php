@@ -59,6 +59,30 @@ echo "parametro2=".$parametro2."\n";
 echo "parametro3=".$parametro3."\n";
 */
 
+if ($metodo=="GET"){
+
+switch ($funcao) { 
+
+    case "elegivelrefin":
+      if (isset($jsonEntrada) || $parametro){
+         include 'elegivelrefin.php';
+       } else {
+         $jsonSaida = json_decode(json_encode(
+          array("erro" => "400",
+              "retorno" => "conteudo JSON vazio 1")
+            ), TRUE);
+       }
+       break; 
+
+    default:
+    $jsonSaida = json_decode(json_encode(
+      array("status" => "400",
+          "retorno" => "Aplicacao " . $aplicacao . " Versao ".$versao." Funcao ".$funcao." Invalida"." Metodo Invalido ".$metodo)
+        ), TRUE);
+    break;
+}
+
+}
 
 if ($metodo=="POST"){
 
@@ -74,9 +98,6 @@ if ($metodo=="POST"){
       break; 
       case "consultarcliente":
         include 'consultarcliente.php';
-      break; 
-      case "elegivelrefin":
-        include 'elegivelrefin.php';
       break; 
   
       default:
