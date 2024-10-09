@@ -138,7 +138,9 @@ then do:
             end.
             if titulo.titpar > 0
             then vqtdParcelas = vqtdParcelas + 1.
-            vvalorParcelaPrincipal      = titulo.vlf_principal.
+            vvalorParcelaPrincipal      = if titulo.vlf_principal > 0
+                                          then titulo.vlf_principal
+                                          else titulo.titvlcob.
             vvalorParcelaComAcrescimo   = titulo.titvlcob.
             if titulo.titsit = "LIB"
             then do:
@@ -147,7 +149,9 @@ then do:
                 then vproximoVencimento = titulo.titdtven.
                 vdias = today - titulo.titdtven.
                 tdias = max(tdias,vdias).
-                vsaldoDevedorPrincipal = vsaldoDevedorPrincipal + titulo.vlf_principal.
+                if titulo.vlf_principal > 0
+                then vsaldoDevedorPrincipal = vsaldoDevedorPrincipal + titulo.vlf_principal.
+                else vsaldoDevedorPrincipal = vsaldoDevedorPrincipal + titulo.titvlcob.
                 vsomaParcelas          = vsomaParcelas          + titulo.titvlcob.
                 vqtdParcelasAbertas    = vqtdParcelasAbertas    + 1.
             end.
