@@ -168,7 +168,7 @@ end.
          ttinstalments.totalWithoutInterest = ttcondicoes.vlr_acordo.
          ttinstalments.discountValue = ttnegociacao.vlr_divida - ttcondicoes.vlr_acordo.
          ttinstalments.discountPercentage = round(((ttinstalments.discountValue * 100) / ttnegociacao.vlr_divida) ,2).
-         ttinstalments.instalment = ttcondicoes.qtd_vezes + (if acoplanos.com_entrada then 1 else 0).
+         ttinstalments.instalment = ttcondicoes.qtd_vezes.
         
         vlistadias = num-entries(acoplanos.listadiasparaentrada).
         if vlistadias = 0 then vlistadias = 1.

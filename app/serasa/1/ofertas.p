@@ -12,7 +12,7 @@ def temp-table ttentrada no-undo serialize-name "dadosEntrada"   /* JSON ENTRADA
    
 DEF TEMP-TABLE ttoffers NO-UNDO SERIALIZE-NAME "offers"
    FIELD id AS char
-   FIELD debtOriginalValues AS DEC 
+   FIELD debtOriginalValues AS DEC format ">>>>>>>>>9.99" decimals 2
    FIELD debtCurrentValues AS DEC
    FIELD maxInstalments AS DEC
    FIELD maxInstalmentValue AS DEC

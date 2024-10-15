@@ -189,7 +189,7 @@ do on error undo:
     AoAcordo.CliFor     = clien.clicod.
     AoAcordo.DtAcordo   = today.
     AoAcordo.Situacao   = "A".
-    AoAcordo.VlAcordo   = ttnegociacao.vlr_divida.
+    AoAcordo.VlAcordo   = ttcondicoes.vlr_acordo.
     AoAcordo.VlOriginal = ttnegociacao.vlr_aberto.
     AoAcordo.HrAcordo   = time.
     AoAcordo.DtEfetiva  = ?.
@@ -207,10 +207,10 @@ do on error undo:
     CREATE ttacordos.
     ttacordos.offerId = aconegcli.id.
     ttacordos.agreementId = string(AoAcordo.IDAcordo).
-    ttacordos.vtotal = ttnegociacao.vlr_divida.
-    ttacordos.totalWithoutInterest = ttcondicoes.vlr_entrada.
-    ttacordos.discountValue = 0.
-    ttacordos.discountPercentage = 0.
+    ttacordos.vtotal = AoAcordo.VlAcordo .
+    ttacordos.totalWithoutInterest = AoAcordo.VlAcordo .
+    ttacordos.discountValue = ttnegociacao.vlr_divida - AoAcordo.VlAcordo.
+    ttacordos.discountPercentage = round(((ttacordos.discountValue * 100) / ttnegociacao.vlr_divida) ,2).
     
     for each ttcontrato  where ttcontrato.negcod = ttnegociacao.negcod.
         find contrato where contrato.contnum = ttcontrato.contnum no-lock.
