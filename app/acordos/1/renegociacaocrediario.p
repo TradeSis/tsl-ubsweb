@@ -47,7 +47,7 @@ def var vvalor_contrato as dec.
 
 {/admcom/barramento/functions.i}
 
-{/u/bsweb/progr/app/acordos/1/renegociacaocrediario.i}
+{acordos/1/renegociacaocrediario.i}
 
 /* LE ENTRADA */
 lokJSON = hrenegociacaoCrediarioEntrada:READ-JSON("longchar",lcJsonEntrada, "EMPTY").
@@ -331,7 +331,7 @@ for each ttrenegociacaocrediario.
 
     /* RECEBIMENTOS */
     
-    {/u/bsweb/progr/app/acordos/1/recebimentos.i ttrenegociacaocrediario.id}
+    {acordos/1/recebimentos.i ttrenegociacaocrediario.id}
     
     voriginal = 0.
     vmodcod = "".
@@ -382,7 +382,7 @@ for each ttrenegociacaocrediario.
                 if pdvmov.ctmcod = "P48" 
                 then do:
                     
-                    titulo.moecod = if pdvmov.ctmcod = "P48" then "NOV" else vctmcod.
+                    titulo.moecod = if pdvmov.ctmcod = "P48" then if cmon.etbcod = 982 then "RFN" else "NOV" else vctmcod.
                     if titulo.modcod begins "CP"
                     then vmodcod = "CPN". /* Se origem for CP */
                     

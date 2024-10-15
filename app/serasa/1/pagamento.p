@@ -231,31 +231,6 @@ then do:
        return.
 end.
 
-
-create ttpagamento. 
-ttpagamento.offerId = aconegcli.id.
-ttpagamento.agreementId = string(aoacordo.idacordo).
-ttpagamento.dueDate = aoacparcela.DtVencimento.
-ttpagamento.instalment = aoacparcela.parcela.
-ttpagamento.instalmentValue = aoacparcela.VlCobrado.
-ttpagamento.paymentMethod = ttentrada.paymentMethod.
-
-run bol/geradadosboleto.p (
-      input 104, /* Banco do Boleto */
-      input ?,      /* Bancarteira especifico */
-      input "SERASA",
-      input clien.clicod,
-      input "Acordo: " + string(aoacordo.idacordo),
-      input aoacparcela.DtVencimento,
-      input aoacparcela.VlCobrado,
-      input 0,
-      output par-recid-boleto,
-      output vstatus,
-      output vmensagem_erro).
-
-find banBoleto where recid(banBoleto) = par-recid-boleto no-lock
-      no-error.
-      
       if banboleto.bancod = 104
       then do:
           run api/barramentoemitir.p 
@@ -276,30 +251,40 @@ find banBoleto where recid(banBoleto) = par-recid-boleto no-lock
         vstatus = "N".
       end.
 
-      
-      run bol/vinculaboleto.p (
-            input recid(banBoleto),
-            input ptpnegociacao,
-            input "idacordo,parcela",
-            input string(aoacparcela.idacordo) + "," +
-                    string(aoacparcela.parcela),
-            input AoAcParcela.VlCobrado,
-            OUTPUT vstatus,
-            output vmensagem_erro).      
-
-ttpagamento.barCode = banboleto.codigoBarras.
-ttpagamento.digitLine = banboleto.linhaDigitavel.
-
-/*ttpagamento.vbase64 = "JVBERi0xLjQNCiWqq6ytD[generic_base64]==".*/
-/*
+    if vstatus = "S"
+    then do:      
+          run bol/vinculaboleto.p (
+                input recid(banBoleto),
+                input ptpnegociacao,
+                input "idacordo,parcela",
+                input string(aoacparcela.idacordo) + "," +
+                        string(aoacparcela.parcela),
+                input AoAcParcela.VlCobrado,
+                OUTPUT vstatus,
+                output vmensagem_erro).      
+            if vstatus = "S"
+            then do: 
+                create ttpagamento.  
+                ttpagamento.offerId = aconegcli.id. 
+                ttpagamento.agreementId = string(aoacordo.idacordo). 
+                ttpagamento.dueDate = aoacparcela.DtVencimento. 
+                ttpagamento.instalment = aoacparcela.parcela. 
+                ttpagamento.instalmentValue = aoacparcela.VlCobrado. 
+                ttpagamento.paymentMethod = ttentrada.paymentMethod. 
+                ttpagamento.barCode = banboleto.codigoBarras. 
+                ttpagamento.digitLine = banboleto.linhaDigitavel.  
+                /*ttpagamento.vbase64 = "JVBERi0xLjQNCiWqq6ytD[generic_base64]==".*/ 
+                /*
 *ttpagamento.pixCode = "00020126360014BR.GOV.BCB.PIX01143690558600018052040000530398654074000.005802BR5912QA TEST LTDA6009SAO PAULO62160512PAGAMENTO1QA6304EF69".
 *ttpagamento.qrCode = "983874277584054862353623720346605218569864170938".
-*/
+                */
+            end.
+    end.
+    
 
+find first ttpagamento.
 
 hsaida  = TEMP-TABLE ttpagamento:handle.
-
-
 lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
 
 /* export LONG VAR*/
