@@ -163,9 +163,13 @@ end.
         ttinstalments.discountValue = 100.
         ttinstalments.discountPercentage = 25.
         */
-        ttinstalments.instalment = ttcondicoes.qtd_vezes.
-
-         do vdata = today to today + 2.
+        ttinstalments.instalment = ttcondicoes.qtd_vezes + (if acoplanos.com_entrada then 1 else 0).
+         def var vlistadias as int.
+         def var ilistadias as int.
+        vlistadias = num-entries(acoplanos.listadiasparaentrada).
+        if vlistadias = 0 then vlistadias = 1.
+        do ilistadias = 1 to vlistadias.
+            vdata = today + int(entry(ilistadias,acoplanos.listadiasparaentrada)).
             CREATE ttdueDate.
             ttdueDate.dueDate = vdata.
             ttdueDate.idpai = ttinstalments.id.

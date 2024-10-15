@@ -208,7 +208,8 @@ run bol/geradadosboleto.p (
       input ?,      /* Bancarteira especifico */
       input "SERASA",
       input clien.clicod,
-      input "Acordo: " + string(aoacordo.idacordo),
+      input "Acordo: " + string(aoacordo.idacordo) + if aoacparcela.titpar = 0 then ""
+                                                    else ("/" + string(AoAcParcela.titpar)),
       input aoacparcela.DtVencimento,
       input aoacparcela.VlCobrado,
       input 0,
