@@ -75,6 +75,10 @@ end.
 def var ptpnegociacao as char.
 def var par-clicod like clien.clicod.
 def var vmessage as log.
+def var vqtdparcelas as int.
+def var vtemparcelamento as log.
+def var vlistadias as int.
+def var ilistadias as int.
 
 find neuclien where neuclien.cpf = dec(ttentrada.document) no-lock no-error.
 if not avail neuclien
@@ -137,12 +141,14 @@ end.
     run calcelegiveis (input ptpnegociacao, input clien.clicod, aconegcli.negcod).
     
     FIND FIRST ttnegociacao where ttnegociacao.negcod = aconegcli.negcod.
+    
     CREATE ttoffers.
     ttoffers.offerId = aconegcli.id.
-    ttoffers.vtype = "EQUALS".
+    
     FIND aconegoc WHERE aconegoc.negcod = aconegcli.negcod NO-LOCK.
     run montacondicoes (INPUT aconegoc.negcod, ?).
     
+    vtemparcelamento = no.
     for each ttcondicoes.
         find acoplanos where 
                             acoplanos.negcod  = aconegcli.negcod and
@@ -152,20 +158,18 @@ end.
         ttcondicoes.perc_desc = acoplanos.perc_desc.
         ttcondicoes.perc_acres = acoplanos.perc_acres. 
         ttcondicoes.calc_juro = acoplanos.calc_juro.
-        ttcondicoes.qtd_vezes = acoplanos.qtd_vezes. 
+        ttcondicoes.qtd_vezes = acoplanos.qtd_vezes + (if acoplanos.com_entrada then 1 else 0).
         ttcondicoes.dias_max_primeira = acoplanos.dias_max_primeira.
 
         CREATE ttinstalments.
         ttinstalments.id = string(ttcondicoes.placod).
         ttinstalments.vtotal = ttcondicoes.vlr_acordo.
-        /*
-        ttinstalments.totalWithoutInterest = 300.
-        ttinstalments.discountValue = 100.
-        ttinstalments.discountPercentage = 25.
-        */
-        ttinstalments.instalment = ttcondicoes.qtd_vezes + (if acoplanos.com_entrada then 1 else 0).
-         def var vlistadias as int.
-         def var ilistadias as int.
+
+         ttinstalments.totalWithoutInterest = ttcondicoes.vlr_acordo.
+         ttinstalments.discountValue = ttnegociacao.vlr_divida - ttcondicoes.vlr_acordo.
+         ttinstalments.discountPercentage = round(((ttinstalments.discountValue * 100) / ttnegociacao.vlr_divida) ,2).
+         ttinstalments.instalment = ttcondicoes.qtd_vezes + (if acoplanos.com_entrada then 1 else 0).
+        
         vlistadias = num-entries(acoplanos.listadiasparaentrada).
         if vlistadias = 0 then vlistadias = 1.
         do ilistadias = 1 to vlistadias.
@@ -174,6 +178,15 @@ end.
             ttdueDate.dueDate = vdata.
             ttdueDate.idpai = ttinstalments.id.
          end.
+
+        vqtdparcelas= 0.
+        for each ttparcelas of ttcondicoes where ttparcelas.vlr_parcela > 0.
+            vqtdparcelas = vqtdparcelas + 1.
+        end.
+
+        if vqtdparcelas > 1 
+        then vtemparcelamento = yes.
+
          for each ttparcelas where ttparcelas.negcod = ttnegociacao.negcod and
                   ttparcelas.placod = ttcondicoes.placod.
                CREATE ttvalues.
@@ -193,7 +206,7 @@ end.
          tttaxes.idpai = ttinstalments.id.
          
     end.
-
+    ttoffers.vtype = (if vtemparcelamento = true then "DIFFERENTS" else "EQUALS").
 
 
 
