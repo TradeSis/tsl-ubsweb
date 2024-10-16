@@ -95,7 +95,7 @@ vmessage = no.
 {aco/acordo.i new} 
 
 def var vdtvencimento as date.
-def var vvalor        as dec.
+
 DEF VAR vjuros AS DEC.
 
 find aconegcli where aconegcli.clicod = clien.clicod and
@@ -148,10 +148,39 @@ find first ttcondicoes where ttcondicoes.negcod = ttnegociacao.negcod and
                          ttcondicoes.placod = int(ttentrada.id)
                          no-error.
 
-vvalor      = if avail ttcondicoes
-            then ttcondicoes.vlr_entrada
-            else 0.
+ttcondicoes.dtvenc1 = vdtvencimento.
+def var vdia as int.
+def var vmes as int.
+def var vano as int.
+def var vtitdtven as date.
+def var vtitpar as int.
 
+vdia = day(vdtvencimento).
+vmes = month(vdtvencimento).
+vano = year(vdtvencimento).
+
+for each ttParcelas where ttparcelas.negcod = ttnegociacao.negcod and
+                 ttparcelas.placod = ttcondicoes.placod
+        break  by  ttParcelas.titpar.
+    if first(ttparcelas.titpar)
+    then ttparcelas.dtven = vdtvencimento.
+    else do:
+        vtitdtven = date(vmes, 
+                         IF VMES = 2 
+                         THEN IF Vdia > 28 
+                              THEN 28 
+                              ELSE Vdia 
+                         ELSE if Vdia > 30 
+                              then 30 
+                              else vdia, 
+                         vano).
+        ttparcelas.dtven = vtitdtven.
+    end.
+    vmes = vmes + 1.
+    if vmes > 12 
+    then assign vano = vano + 1
+                vmes = 1.    
+end.
 
 do on error undo:
 
@@ -160,8 +189,8 @@ do on error undo:
     AoAcordo.CliFor     = clien.clicod.
     AoAcordo.DtAcordo   = today.
     AoAcordo.Situacao   = "A".
-    AoAcordo.VlAcordo   = vvalor.
-    AoAcordo.VlOriginal = vvalor.
+    AoAcordo.VlAcordo   = ttcondicoes.vlr_acordo.
+    AoAcordo.VlOriginal = ttnegociacao.vlr_aberto.
     AoAcordo.HrAcordo   = time.
     AoAcordo.DtEfetiva  = ?.
     AoAcordo.HrEfetiva  = ?.
@@ -178,10 +207,10 @@ do on error undo:
     CREATE ttacordos.
     ttacordos.offerId = aconegcli.id.
     ttacordos.agreementId = string(AoAcordo.IDAcordo).
-    ttacordos.vtotal = vvalor.
-    ttacordos.totalWithoutInterest = vvalor.
-    ttacordos.discountValue = 0.
-    ttacordos.discountPercentage = 0.
+    ttacordos.vtotal = AoAcordo.VlAcordo .
+    ttacordos.totalWithoutInterest = AoAcordo.VlAcordo .
+    ttacordos.discountValue = ttnegociacao.vlr_divida - AoAcordo.VlAcordo.
+    ttacordos.discountPercentage = round(((ttacordos.discountValue * 100) / ttnegociacao.vlr_divida) ,2).
     
     for each ttcontrato  where ttcontrato.negcod = ttnegociacao.negcod.
         find contrato where contrato.contnum = ttcontrato.contnum no-lock.
@@ -228,11 +257,11 @@ do on error undo:
                                 ttparcelas.placod = ttcondicoes.placod
             by  ttParcelas.titpar.
 
-    
+            vtitpar = ttParcelas.titpar + (if acoplanos.com_entrada then 1 else 0).
             create aoacparcela.          
             AoAcParcela.IDAcordo     = aoAcordo.IDAcordo. 
             AoAcParcela.contnum      = ?. /* na Efetivacao */
-            AoAcParcela.Parcela      = ttParcelas.titpar.
+            AoAcParcela.Parcela      = vtitpar.
             AoAcParcela.DtVencimento = ttparcelas.dtvenc.
             AoAcParcela.VlCobrado    = ttparcelas.vlr_parcela.
             AoAcParcela.dtBaixa      = ?.
@@ -242,7 +271,7 @@ do on error undo:
             AoAcParcela.VlJuros      = 0.
 
             CREATE ttinstalments.
-            ttinstalments.instalment = ttcondicoes.placod.
+            ttinstalments.instalment = vtitpar.
             ttinstalments.dueDate = AoAcParcela.DtVencimento.
             ttinstalments.vvalue =  AoAcParcela.VlCobrado.
             ttinstalments.vtotal =  AoAcParcela.VlCobrado.

@@ -12,7 +12,7 @@ def temp-table ttentrada no-undo serialize-name "dadosEntrada"   /* JSON ENTRADA
    
 DEF TEMP-TABLE ttoffers NO-UNDO SERIALIZE-NAME "offers"
    FIELD id AS char
-   FIELD debtOriginalValues AS DEC 
+   FIELD debtOriginalValues AS DEC format ">>>>>>>>>9.99" decimals 2
    FIELD debtCurrentValues AS DEC
    FIELD maxInstalments AS DEC
    FIELD maxInstalmentValue AS DEC
@@ -94,6 +94,11 @@ end.
 def var ptpnegociacao as char.
 def var par-clicod like clien.clicod.
 def var vmessage as log.
+DEF VAR vmaxparcelas AS INT.
+DEF VAR vvalorminparcelas AS dec.
+def var vplanoavista as dec.
+def var vqtdparcelas as int.
+def var vtemparcelamento as log.
 
 find neuclien where neuclien.cpf = dec(ttentrada.document) no-lock no-error.
 if not avail neuclien
@@ -137,9 +142,10 @@ vmessage = no.
 
 run calcelegiveis (input ptpnegociacao, input clien.clicod, ?).
 for each ttnegociacao.
-    find aconegoc of ttnegociacao no-lock.
-    ttnegociacao.negnom = aconegoc.negnom.
-
+   
+   find aconegoc of ttnegociacao no-lock.
+   ttnegociacao.negnom = aconegoc.negnom.
+    
    find first aconegcli where aconegcli.clicod = clien.clicod and
                               aconegcli.dtneg  = today and
                               aconegcli.negcod = ttnegociacao.negcod
@@ -159,24 +165,62 @@ for each ttnegociacao.
                next.
          end.
    end.
+   
+   run montacondicoes (INPUT aconegoc.negcod, ?).
+    
+   vmaxparcelas = 0.
+   vvalorminparcelas = 0.
+   vplanoavista = 0.
+   vtemparcelamento = no.
+   for each ttcondicoes.
+        find acoplanos where 
+                            acoplanos.negcod  = aconegcli.negcod and
+                            acoplanos.placod  = ttcondicoes.placod
+                            no-lock.
 
+        ttcondicoes.perc_desc = acoplanos.perc_desc.
+        ttcondicoes.perc_acres = acoplanos.perc_acres. 
+        ttcondicoes.calc_juro = acoplanos.calc_juro.
+        ttcondicoes.qtd_vezes = acoplanos.qtd_vezes + (if acoplanos.com_entrada then 1 else 0).
+        ttcondicoes.dias_max_primeira = acoplanos.dias_max_primeira.
+        
+        vmaxparcelas = max(vmaxparcelas, ttcondicoes.qtd_vezes).
+        
+        
+        vqtdparcelas= 0.
+        for each ttparcelas of ttcondicoes where ttparcelas.vlr_parcela > 0.
+            vqtdparcelas = vqtdparcelas + 1.
+        end.
+
+        if vqtdparcelas > 1 
+        then vtemparcelamento = yes.
+
+        for each ttparcelas of ttcondicoes where ttparcelas.vlr_parcela > 0.
+            
+            if vqtdparcelas = 1 and ttparcelas.titpar = 0
+            then vplanoavista = ttparcelas.vlr_parcela.
+        
+            if vvalorminparcelas = 0 
+            then vvalorminparcelas = ttparcelas.vlr_parcela.
+            else vvalorminparcelas = min(vvalorminparcelas, ttparcelas.vlr_parcela).
+        end. 
+
+   end.
+
+    
    CREATE ttoffers.
    ttoffers.id = aconegcli.id.
    ttoffers.idpai = ttnegociacao.negcod.
    ttoffers.debtOriginalValues = ttnegociacao.vlr_aberto.
    ttoffers.debtCurrentValues = ttnegociacao.vlr_divida.
    ttoffers.interest = ttnegociacao.vlr_divida - ttnegociacao.vlr_aberto.
+   ttoffers.maxInstalments = vmaxparcelas.                                                       
+   ttoffers.maxInstalmentValue = vvalorminparcelas.                                              
+   ttoffers.atSight = vplanoavista.                                                               
+   ttoffers.discountValue = (if vplanoavista = 0 then 0 else ttnegociacao.vlr_divida - vplanoavista).  
+   ttoffers.discountPercentage = round(((ttoffers.discountValue * 100) / ttnegociacao.vlr_divida) ,2).
+   ttoffers.hasInstalments = vtemparcelamento. 
       
-      
-      
-      /*
-      "maxInstalments": 8,                                                        // MAX quantidade máxima de parcelas da oferta (opcional)
-      "maxInstalmentValue": 50,                                                // MAX valor da parcela na opção máxima de parcelamento (que foi indicada nocampo 'maxInstalments') (opcional)
-      "atSight": 300,                                                                // Valor à vista desta oferta (condição a vista)
-      "discountValue": 100,                                                        // Valor de desconto máximo para esta oferta. Traduzindo em números, deve ser igual ao valor de 'debtCurrentValues' subtraído de 'atSight'.
-      "discountPercentage": 25,                                                //Percentual de desconto máximo para esta oferta. Este campo deve ser coerente com a informação enviada em 'discountValue'. Regras de cálculo: 2 casas decimais e arredondamento para baixo, onde o valor deve ser positivo e < 100.
-      "hasInstalments": true,                                                // Indica se o acordo tem opções de parcelamento.        
-   */
 
    for each ttcontrato where ttcontrato.negcod = ttnegociacao.negcod.
       CREATE ttdebts.
