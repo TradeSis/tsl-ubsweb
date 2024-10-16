@@ -48,7 +48,8 @@ def  temp-table VerificaCreditoVenda serialize-name "dadosEntrada"
     field dt_ultivcto as char
     field vdaterceiros as char
     field neuro_id_operacao as char
-    field ID_BIOMETRIA as char.
+    field ID_BIOMETRIA as char
+    field atendimento_presencial as char. /* heloi 29082024 - proj inteligencia biometria */
 
 hentrada = temp-table VerificaCreditoVenda:HANDLE.
 
@@ -654,6 +655,8 @@ then do.
 
 
     /* helio 190324 - aqssinatura digital */
+    run log("ID_BIOMETRIA " + texto(verificacreditovenda.ID_BIOMETRIA) +
+    " atendimento_presencial " + texto(verificacreditovenda.atendimento_presencial)).
     if verificacreditovenda.ID_BIOMETRIA <> ? and verificacreditovenda.ID_BIOMETRIA <> ""
     then do:
         run log("GUARDA Biometria = " + string(clien.clicod) + " " + verificacreditovenda.ID_BIOMETRIA).
@@ -932,7 +935,8 @@ then do.
                                  else string(clien.ultimaAtualizacaoCadastral,"99/99/9999"))     
                        + "&PROP_GENERO=" + texto(clien.genero)   
 
-                       + "&PROP_ID_BIOMETRIA=" + trim(texto(VerificaCreditoVenda.ID_BIOMETRIA))                          
+                       + "&PROP_ID_BIOMETRIA=" + trim(texto(VerificaCreditoVenda.ID_BIOMETRIA))  
+                       + "&PROP_ATENDIMENTO_PRESENCIAL=" + trim(texto(VerificaCreditoVenda.atendimento_presencial))                          
 
                    + "&PROP_FLXPOLITICA="    + vPOLITICA.
             vtimeini = mtime. /* #9 */
@@ -1147,8 +1151,6 @@ then do.
     if vneurotech  /*DESATIVADO *and vhubseg = no */
     then do: 
                     
-        run log("ID_BIOMETRIA " + texto(VerificaCreditoVenda.ID_BIOMETRIA)).
-                     
         find cpclien where cpclien.clicod = clien.clicod no-lock no-error.
                 
         vrenda         = if clien.prorenda[1] = ?
@@ -1262,7 +1264,8 @@ then do.
 
                      + "&PROP_DTCADASTRO=" + texto(string(clien.dtcad,"99/99/9999")) 
                      + "&PROP_VALIDADELIM=" + (if neuclien.vctolimite = ? then "" else string(neuclien.vctolimite,"99/99/9999"))                                       
-                + "&PROP_ID_BIOMETRIA=" + trim(texto(VerificaCreditoVenda.ID_BIOMETRIA))                                                  
+                + "&PROP_ID_BIOMETRIA=" + trim(texto(VerificaCreditoVenda.ID_BIOMETRIA))     
+                + "&PROP_ATENDIMENTO_PRESENCIAL=" + trim(texto(VerificaCreditoVenda.atendimento_presencial))                                               
                 /* helio 08012024 */
                 + "&PROP_LISTA_EGUARDIAN=" + trim(texto(vpropLISTA_EGUARDIAN))                                                  
                 + "&PROP_FLXPOLITICA="  + vPOLITICA.
