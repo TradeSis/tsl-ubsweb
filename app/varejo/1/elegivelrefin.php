@@ -33,7 +33,7 @@ $conteudo = json_decode($retorno, true);
 if (isset($conteudo["conteudoSaida"][0])) { 
   $jsonSaida = $conteudo["conteudoSaida"][0];
 } else {
-  $jsonSaida = array('dadosSaida' =>  $conteudo);
+  $jsonSaida = $conteudo;
 }
 
 fwrite($arquivo, $identificacao . "-SAIDA->" . json_encode($jsonSaida) . "\n\n");

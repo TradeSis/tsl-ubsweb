@@ -45,7 +45,7 @@ def temp-table ttsaida  no-undo serialize-name "conteudoSaida"  /* JSON SAIDA CA
     field tstatus        as int serialize-name "status"
     field descricaoStatus      as char.
     
-DEF DATASET dsContrato SERIALIZE-HIDDEN
+DEF DATASET dadosSaida /*SERIALIZE-HIDDEN*/
   FOR ttcliente, ttcontrato.
 
 
@@ -225,7 +225,7 @@ then do:
             end.
         end.
          
-        if velegivel-contrato
+        if true or velegivel-contrato
         then do:   
             create ttcontrato.
             ttcontrato.numeroContrato           = contrato.contnum. 
@@ -243,7 +243,7 @@ then do:
     
     if  rfnparam.diasAtrasoMax > 0
     then do:
-        if tdias >  rfnparam.diasAtrasoMax
+        if tdias <  rfnparam.diasAtrasoMax
         then do:
             for each ttcontrato.
                 delete ttcontrato.
@@ -267,8 +267,8 @@ then do:
     message string(vlcSaida).
     return.
 end.
-else do:
-    hsaida =  DATASET dsContrato:HANDLE.
+
+    hsaida =  DATASET dadosSaida:HANDLE.
     
     lokJson = hSaida:WRITE-JSON("LONGCHAR", vlcsaida, TRUE) no-error.
     if lokJson
@@ -283,6 +283,5 @@ else do:
         message string(vlcSaida).
         return.
     end.
-end.
 
 
