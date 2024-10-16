@@ -18,13 +18,13 @@ if (isset($explode[2])) {
   $parametro3 = $explode[2];
 }
 
-/*
-echo "\ncontrole.php\n";
+
+/* echo "\ncontrole.php\n";
 echo "funcao=".$funcao."\n";
 echo "parametro=".$parametro."\n";
 echo "parametro2=".$parametro2."\n";
-echo "parametro3=".$parametro3."\n";
-*/
+echo "parametro3=".$parametro3."\n"; */
+
 
 if ($parametro=="credito-pessoal") {
   $aux=$funcao;
@@ -32,6 +32,11 @@ if ($parametro=="credito-pessoal") {
   $parametro = $aux;
 }
 if ($parametro=="consultarcliente") {
+  $aux=$funcao;
+  $funcao=$parametro;
+  $parametro = $aux;
+}
+if ($parametro=="elegivelrefin") {
   $aux=$funcao;
   $funcao=$parametro;
   $parametro = $aux;
@@ -58,6 +63,30 @@ echo "parametro2=".$parametro2."\n";
 echo "parametro3=".$parametro3."\n";
 */
 
+if ($metodo=="GET"){
+
+switch ($funcao) { 
+
+    case "elegivelrefin":
+      if (isset($jsonEntrada) || $parametro){
+         include 'elegivelrefin.php';
+       } else {
+         $jsonSaida = json_decode(json_encode(
+          array("erro" => "400",
+              "retorno" => "conteudo JSON vazio 1")
+            ), TRUE);
+       }
+       break; 
+
+    default:
+    $jsonSaida = json_decode(json_encode(
+      array("status" => "400",
+          "retorno" => "Aplicacao " . $aplicacao . " Versao ".$versao." Funcao ".$funcao." Invalida"." Metodo Invalido ".$metodo)
+        ), TRUE);
+    break;
+}
+
+}
 
 if ($metodo=="POST"){
 
