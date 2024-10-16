@@ -6,8 +6,12 @@ def var vid as int.
 def var vparcelas-lista as char.
 def var vparcelas-valor as char.
 def var viofPerc as dec.
+def var vseguroperc as dec.
 def var vvalorIOF as dec.
+def var vtfcPerc as dec.
+def var vvalorTFC as dec.
 def var vprincipal as dec.
+def var vvalorFinanciado as dec.
 def var vprincipalPerc as dec.
 def var vprodutos-Lista as char.
 def var vcontratos-Lista as char.
@@ -38,7 +42,8 @@ def var vdatainivigencia12 as date.
 def var vdatafimvigencia13 as date.
 def var vvalorSeguroPrestamistaLiquido as dec.
 def var vvalorSeguroPrestamistaIof as dec.
-def var vvalorSeguroPrestamista29 as dec.
+def var vvalorseguroRR as dec.
+def var vvalorSeguroPrestamista29 as char.
 def var vvalorSeguroPrestamista30 as dec.
 
   
@@ -88,6 +93,7 @@ DEFINE {1} shared TEMP-TABLE ttcartaoLebes NO-UNDO SERIALIZE-NAME "cartaoLebes"
     FIELD   cet as char
     FIELD   cetAno as char 
     FIELD   taxaMes as char  
+    FIELD   taxaAno as char  
     field   valorIof as char
     field   qtdParcelas as char
     field   valorTFC as char
@@ -174,33 +180,34 @@ procedure trocamnemos.
 
 if avail ttpedidoCartaoLebes
 then do:
-    tttermos.termo = freplace(tttermos.termo,"~{codigoLoja~}",ttpedidoCartaoLebes.codigoLoja).
-    tttermos.termo = freplace(tttermos.termo,"~{dataTransacao~}",string(vdataTransacao,"99/99/9999")).
-    tttermos.termo = freplace(tttermos.termo,"~{dataTransacao.extenso~}",vdataTransacaoExtenso).
-    tttermos.termo = freplace(tttermos.termo,"~{numeroComponente~}",ttpedidoCartaoLebes.numeroComponente).
-    tttermos.termo = freplace(tttermos.termo,"~{codigoVendedor~}",ttpedidoCartaoLebes.codigoVendedor).
-    tttermos.termo = freplace(tttermos.termo,"~{valorTotal~}",ttpedidoCartaoLebes.valorTotal).
-    tttermos.termo = freplace(tttermos.termo,"~{codigoCliente~}",ttpedidoCartaoLebes.codigoCliente).
-    tttermos.termo = freplace(tttermos.termo,"~{numeroNotaFiscal~}",ttpedidoCartaoLebes.numeroNotaFiscal).
+    tttermos.termo = freplace(tttermos.termo,"~{codLoja~}",ttpedidoCartaoLebes.codigoLoja).
+    tttermos.termo = freplace(tttermos.termo,"~{dtTransacao~}",string(vdataTransacao,"99/99/9999")).
+    tttermos.termo = freplace(tttermos.termo,"~{dtTransacao.extenso~}",vdataTransacaoExtenso).
+    tttermos.termo = freplace(tttermos.termo,"~{nroComp~}",ttpedidoCartaoLebes.numeroComponente).
+    tttermos.termo = freplace(tttermos.termo,"~{codVend~}",ttpedidoCartaoLebes.codigoVendedor).
+    tttermos.termo = freplace(tttermos.termo,"~{vlTotal~}",ttpedidoCartaoLebes.valorTotal).
+    tttermos.termo = freplace(tttermos.termo,"~{codCli~}",ttpedidoCartaoLebes.codigoCliente).
+    tttermos.termo = freplace(tttermos.termo,"~{nroNF~}",ttpedidoCartaoLebes.numeroNotaFiscal).
 end.
 
 if avail clien
 then do:
-    tttermos.termo = freplace(tttermos.termo,"~{cpfCnpjCliente~}",clien.ciccgc).
-    tttermos.termo = freplace(tttermos.termo,"~{rg~}",clien.ciins). /* helio-gabriel confirmar se é o campo RG*/
+    tttermos.termo = freplace(tttermos.termo,"~{cpfCnpj~}",clien.ciccgc).
+    tttermos.termo = freplace(tttermos.termo,"~{rg~}",clien.ciins). 
     tttermos.termo = freplace(tttermos.termo,"~{nomeCliente~}",clien.clinom).
+    tttermos.termo = freplace(tttermos.termo,"~{nomeSocial~}",clien.nomeSocial).
     vdataNascimento = STRING(DAY(clien.dtnasc), "99") + "/" +
                           STRING(MONTH(clien.dtnasc), "99") + "/" +
                           STRING(YEAR(clien.dtnasc), "9999").
-    tttermos.termo = freplace(tttermos.termo,"~{dataNascimento~}",vdataNascimento).
-    tttermos.termo = freplace(tttermos.termo,"~{endereco.cep~}",clien.cep[1]).
-    tttermos.termo = freplace(tttermos.termo,"~{endereco.logradouro~}",clien.endereco[1]).
-    tttermos.termo = freplace(tttermos.termo,"~{endereco.numero~}",string(clien.numero[2])).
-    tttermos.termo = freplace(tttermos.termo,"~{endereco.complemento~}",clien.compl[1]). 
-    tttermos.termo = freplace(tttermos.termo,"~{endereco.bairro~}",clien.bairro[1]).
-    tttermos.termo = freplace(tttermos.termo,"~{endereco.cidade~}",clien.cidade[1]).
-    tttermos.termo = freplace(tttermos.termo,"~{endereco.estado~}",clien.ufecod[1]).
-    tttermos.termo = freplace(tttermos.termo,"~{endereco.pais~}","BRASIL"). 
+    tttermos.termo = freplace(tttermos.termo,"~{dtNascimento~}",vdataNascimento).
+    tttermos.termo = freplace(tttermos.termo,"~{end.logradouro~}",clien.endereco[1]).
+    tttermos.termo = freplace(tttermos.termo,"~{end.numero~}",string(clien.numero[2])).
+    tttermos.termo = freplace(tttermos.termo,"~{end.complemento~}",clien.compl[1]). 
+    tttermos.termo = freplace(tttermos.termo,"~{end.bairro~}",clien.bairro[1]).
+    tttermos.termo = freplace(tttermos.termo,"~{end.cidade~}",clien.cidade[1]).
+    tttermos.termo = freplace(tttermos.termo,"~{end.estado~}",clien.ufecod[1]).
+    tttermos.termo = freplace(tttermos.termo,"~{end.cep~}",clien.cep[1]).
+    tttermos.termo = freplace(tttermos.termo,"~{end.pais~}","BRASIL"). 
     tttermos.termo = freplace(tttermos.termo,"~{email~}",clien.zona).
     tttermos.termo = freplace(tttermos.termo,"~{telefone~}",clien.fone).
 
@@ -209,18 +216,22 @@ end.
 if avail ttcartaolebes
 then do:
 
-    tttermos.termo = freplace(tttermos.termo,"~{parcelas.lista~}",vparcelas-lista).
-    tttermos.termo = freplace(tttermos.termo,"~{parcelas.valor~}",vparcelas-valor).
-    tttermos.termo = freplace(tttermos.termo,"~{qtdParcelas~}",ttcartaoLebes.qtdParcelas).
-    tttermos.termo = freplace(tttermos.termo,"~{valorAcrescimo~}",ttcartaoLebes.valorAcrescimo).
-    tttermos.termo = freplace(tttermos.termo,"~{numeroContrato~}",ttcartaoLebes.numeroContrato).
+    tttermos.termo = freplace(tttermos.termo,"~{parc.lista~}",vparcelas-lista).
+    tttermos.termo = freplace(tttermos.termo,"~{parc.vl~}",vparcelas-valor).
+    tttermos.termo = freplace(tttermos.termo,"~{qtdParc~}",ttcartaoLebes.qtdParcelas).
+    tttermos.termo = freplace(tttermos.termo,"~{vlAcrescimo~}",ttcartaoLebes.valorAcrescimo).
+    tttermos.termo = freplace(tttermos.termo,"~{nroContrato~}",ttcartaoLebes.numeroContrato).
     tttermos.termo = freplace(tttermos.termo,"~{cet~}",ttcartaoLebes.cet).
     tttermos.termo = freplace(tttermos.termo,"~{cetAno~}",ttcartaoLebes.cetAno).
     tttermos.termo = freplace(tttermos.termo,"~{taxaMes~}",ttcartaoLebes.taxaMes).
-    tttermos.termo = freplace(tttermos.termo,"~{valorIOF~}",ttcartaoLebes.valorIOF).
+    tttermos.termo = freplace(tttermos.termo,"~{taxaAno~}",ttcartaoLebes.taxaAno). 
+    tttermos.termo = freplace(tttermos.termo,"~{vlTFC~}",ttcartaoLebes.valorTFC).
+    tttermos.termo = freplace(tttermos.termo,"~{tfc.perc~}",trim(string(vtfcPerc,">>>>>>>>9.99"))). 
+    tttermos.termo = freplace(tttermos.termo,"~{vlIOF~}",ttcartaoLebes.valorIOF).
     tttermos.termo = freplace(tttermos.termo,"~{iof.perc~}",trim(string(viofPerc,">>>>>>>>9.99"))).
-    tttermos.termo = freplace(tttermos.termo,"~{principal~}",trim(string(vprincipal,">>>>>>>>9.99"))).
-    tttermos.termo = freplace(tttermos.termo,"~{principal.perc~}",trim(string(vprincipalPerc,">>>>>>>>9.99"))).
+    tttermos.termo = freplace(tttermos.termo,"~{princ~}",trim(string(vprincipal,">>>>>>>>9.99"))).
+    tttermos.termo = freplace(tttermos.termo,"~{princ.perc~}",trim(string(vprincipalPerc,">>>>>>>>9.99"))).
+    tttermos.termo = freplace(tttermos.termo,"~{seguro.perc~}",trim(string(vseguroperc,">>>>>>>>9.99"))).
     
    
 
@@ -229,23 +240,32 @@ end.
 if avail ttseguroprestamista
 then do:
     
-    tttermos.termo = freplace(tttermos.termo,"~{numeroBilheteSeguroPrestamista~}",ttseguroprestamista.numeroApoliceSeguroPrestamista). 
-    tttermos.termo = freplace(tttermos.termo,"~{numeroSorte~}",ttseguroprestamista.numeroSorteioSeguroPrestamista).    
-    tttermos.termo = freplace(tttermos.termo,"~{sp18~}",trim(string(vvalorSeguroPrestamista,">>>>>>>>9.99"))).
-    tttermos.termo = freplace(tttermos.termo,"~{sp16~}",trim(string(vvalorSeguroPrestamistaLiquido,">>>>>>>>9.99"))). 
-    tttermos.termo = freplace(tttermos.termo,"~{sp17~}",trim(string(vvalorSeguroPrestamistaIof,">>>>>>>>9.99"))).
-    tttermos.termo = freplace(tttermos.termo,"~{sp29~}",trim(string(vvalorSeguroPrestamista29,">>>>>>>>9.99"))).
-    tttermos.termo = freplace(tttermos.termo,"~{sp30~}",trim(string(vvalorSeguroPrestamista30,">>>>>>>>9.99"))). 
-    tttermos.termo = freplace(tttermos.termo,"~{sp12~}",string(vdatainivigencia12,"99/99/9999")).
-    tttermos.termo = freplace(tttermos.termo,"~{sp13~}",string(vdatafimvigencia13,"99/99/9999")).
+    tttermos.termo = freplace(tttermos.termo,"~{nroBilheteSP~}",ttseguroprestamista.numeroApoliceSeguroPrestamista). 
+    tttermos.termo = freplace(tttermos.termo,"~{nroSorte~}",ttseguroprestamista.numeroSorteioSeguroPrestamista).    
+    tttermos.termo = freplace(tttermos.termo,"~{spVlTotal~}",trim(string(vvalorSeguroPrestamista,">>>>>>>>9.99"))).
+    tttermos.termo = freplace(tttermos.termo,"~{spVlLiq~}",trim(string(vvalorSeguroPrestamistaLiquido,">>>>>>>>9.99"))). 
+    tttermos.termo = freplace(tttermos.termo,"~{spVlIof~}",trim(string(vvalorSeguroPrestamistaIof,">>>>>>>>9.99"))).
+    tttermos.termo = freplace(tttermos.termo,"~{spDtVigIni~}",string(vdatainivigencia12,"99/99/9999")).
+    tttermos.termo = freplace(tttermos.termo,"~{spDtVigFim~}",string(vdatafimvigencia13,"99/99/9999")).
+
+
+    vvalorSeguroPrestamista29 = substring(tttermos.termo,index(tttermos.termo,"spRR.perc#") + 10).
+    vvalorSeguroPrestamista29 = substring(vvalorSeguroPrestamista29,1,index(vvalorSeguroPrestamista29,"#") - 1).
+
+    vvalorSeguroPrestamista30 = dec(vvalorSeguroPrestamista29) no-error.
+    if vvalorSeguroPrestamista30 = ? then vvalorSeguroPrestamista30 = 0.
+    vvalorSeguroPrestamista = round(vvalorSeguroPrestamista * vvalorSeguroPrestamista30 / 100,2).
+
+    tttermos.termo = freplace(tttermos.termo,"~{spRR~}",trim(string(vvalorSeguroPrestamista,">>>>>>>9.99"))).
+    tttermos.termo = freplace(tttermos.termo,"~{spRR.perc#" + vvalorSeguroPrestamista29 + "#~}",vvalorSeguroPrestamista29).
 
 end.
 
-    tttermos.termo = freplace(tttermos.termo,"~{dataPrimeiroVencimento~}",vdtPriVen).
-    tttermos.termo = freplace(tttermos.termo,"~{dataUltimoVencimento~}",vdtUltVen). 
-    tttermos.termo = freplace(tttermos.termo,"~{valorEntrada~}",trim(string(vvalorEntrada,">>>>>>>>9.99"))).
-    tttermos.termo = freplace(tttermos.termo,"~{produtos.lista~}",vprodutos-lista).
-    tttermos.termo = freplace(tttermos.termo,"~{contratos.lista~}",vcontratos-lista).
+    tttermos.termo = freplace(tttermos.termo,"~{dtPriVen~}",vdtPriVen).
+    tttermos.termo = freplace(tttermos.termo,"~{dtUltVen~}",vdtUltVen). 
+    tttermos.termo = freplace(tttermos.termo,"~{vlEntrada~}",trim(string(vvalorEntrada,">>>>>>>>9.99"))).
+    tttermos.termo = freplace(tttermos.termo,"~{prod.lista~}",vprodutos-lista).
+    tttermos.termo = freplace(tttermos.termo,"~{cont.lista~}",vcontratos-lista).
 
 end procedure.
 
