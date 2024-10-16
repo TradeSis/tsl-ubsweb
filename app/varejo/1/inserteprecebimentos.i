@@ -220,18 +220,21 @@ def var valteraprincipal as log.
                                      
                 end.
               
-            /*    
-            if true_tolog(ttcontrato.contratoFinanceira) /* Marca Financeira */
+            if true /* Marca Financeira */
             then do on error undo:
                             
                 run /admcom/progr/fin/sicrecontr_create.p (recid(pdvforma),
                                              contrato.contnum,
                                              output psicred).
 
-                find sicred_contrato where recid(sicred_contrato) = psicred no-lock no-error.
+                find sicred_contrato where recid(sicred_contrato) = psicred exclusive no-error.
+                if avail sicred_contrato
+                then do:
+                    sicred_contrato.sstatus = "INSERTEP". /* Cria a marcação, mas não coloca na fila para envio, pois já esta */
+                end.
             
             end.
-            */
+            
             
             for each ttparcelas where ttparcelas.idpai = ttcontrato.id.
 
