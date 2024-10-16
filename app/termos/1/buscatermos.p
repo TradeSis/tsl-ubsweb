@@ -102,16 +102,31 @@ if avail ttcartaoLebes
 then do:
   
     vvalorIOF = dec(ttCartaoLebes.valorIOF).   
-    vvalorAcrescimo = dec(ttCartaoLebes.valorAcrescimo).    
+    vvalorAcrescimo = dec(ttCartaoLebes.valorAcrescimo). 
+    vvalorTFC = dec(ttCartaoLebes.valorTFC). 
     vprincipal = vvalorTotal - vvalorAcrescimo.
-    vprincipalPerc = vprincipal / (vvalorTotal) * 100.
-    viofPerc = vvalorIOF / (vvalorTotal - vvalorEntrada) * 100.
-    IF viofPerc =  ? then viofPerc = 0.
-
+   
+    
     find first ttseguroprestamista no-error.
     if avail ttcartaoLebes
     then vvalorSeguroPrestamista = dec(ttseguroprestamista.valorSeguroPrestamista).
     if vvalorSeguroPrestamista = ? then vvalorSeguroPrestamista = 0.
+
+    if ttpedidoCartaoLebes.tipoOperacao = "CDC"
+    then do :
+        assign  vvalorFinanciado  = vprincipal + vvalorIOF + vvalorTFC.
+    end.    
+    else do:
+        assign  vvalorFinanciado  = vprincipal + vvalorIOF + vvalorSeguroPrestamista + vvalorTFC.
+    end.
+	
+    vprincipalPerc = vprincipal / (vvalorFinanciado) * 100.
+    viofPerc = vvalorIOF / (vvalorFinanciado) * 100.
+    IF viofPerc =  ? then viofPerc = 0.
+    vtfcPerc = vvalorTFC / (vvalorFinanciado) * 100.
+    IF vtfcPerc =  ? then vtfcPerc = 0.
+    vseguroperc = vvalorSeguroPrestamista / (vvalorFinanciado) * 100.
+    IF vseguroperc =  ? then vseguroperc = 0.
     
     for each ttparcelas no-lock break by int(ttparcelas.seqParcela).
         if first-of(int(ttparcelas.seqParcela))
