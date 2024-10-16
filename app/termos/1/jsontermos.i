@@ -42,7 +42,8 @@ def var vdatainivigencia12 as date.
 def var vdatafimvigencia13 as date.
 def var vvalorSeguroPrestamistaLiquido as dec.
 def var vvalorSeguroPrestamistaIof as dec.
-def var vvalorSeguroPrestamista29 as dec.
+def var vvalorseguroRR as dec.
+def var vvalorSeguroPrestamista29 as char.
 def var vvalorSeguroPrestamista30 as dec.
 
   
@@ -244,10 +245,19 @@ then do:
     tttermos.termo = freplace(tttermos.termo,"~{spVlTotal~}",trim(string(vvalorSeguroPrestamista,">>>>>>>>9.99"))).
     tttermos.termo = freplace(tttermos.termo,"~{spVlLiq~}",trim(string(vvalorSeguroPrestamistaLiquido,">>>>>>>>9.99"))). 
     tttermos.termo = freplace(tttermos.termo,"~{spVlIof~}",trim(string(vvalorSeguroPrestamistaIof,">>>>>>>>9.99"))).
-    tttermos.termo = freplace(tttermos.termo,"~{spRR~}",trim(string(vvalorSeguroPrestamista30,">>>>>>>>9.99"))). 
-    tttermos.termo = freplace(tttermos.termo,"~{spRR.perc~}",trim(string(vvalorSeguroPrestamista29,">>>>>>>>9.99"))).
     tttermos.termo = freplace(tttermos.termo,"~{spDtVigIni~}",string(vdatainivigencia12,"99/99/9999")).
     tttermos.termo = freplace(tttermos.termo,"~{spDtVigFim~}",string(vdatafimvigencia13,"99/99/9999")).
+
+
+    vvalorSeguroPrestamista29 = substring(tttermos.termo,index(tttermos.termo,"spRR.perc#") + 10).
+    vvalorSeguroPrestamista29 = substring(vvalorSeguroPrestamista29,1,index(vvalorSeguroPrestamista29,"#") - 1).
+
+    vvalorSeguroPrestamista30 = dec(vvalorSeguroPrestamista29) no-error.
+    if vvalorSeguroPrestamista30 = ? then vvalorSeguroPrestamista30 = 0.
+    vvalorSeguroPrestamista = round(vvalorSeguroPrestamista * vvalorSeguroPrestamista30 / 100,2).
+
+    tttermos.termo = freplace(tttermos.termo,"~{spRR~}",trim(string(vvalorSeguroPrestamista,">>>>>>>9.99"))).
+    tttermos.termo = freplace(tttermos.termo,"~{spRR.perc#" + vvalorSeguroPrestamista29 + "#~}",vvalorSeguroPrestamista29).
 
 end.
 
