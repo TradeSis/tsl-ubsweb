@@ -129,7 +129,7 @@ then do:
     IF vseguroperc =  ? then vseguroperc = 0.
     
     for each ttparcelas no-lock break by int(ttparcelas.seqParcela).
-        if first-of(int(ttparcelas.seqParcela))
+        if first(int(ttparcelas.seqParcela))
         then vparcelas-valor = trim(string(dec(ttparcelas.valorParcela),">>>>>>>>9.99")).
 
         vdia = int(entry(3,ttparcelas.dataVencimento,"-")).
