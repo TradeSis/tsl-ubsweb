@@ -269,6 +269,8 @@ do on error undo:
             AoAcParcela.DtEnvio      = ?.
             AoAcParcela.Enviar       = no.
             AoAcParcela.VlJuros      = 0.
+            AoAcParcela.segprestamista = ttparcelas.segprestamista.
+            AoAcParcela.vlr_parcelaOriginal = ttparcelas.vlr_parcelaOriginal.
 
             CREATE ttinstalments.
             ttinstalments.instalment = vtitpar.
