@@ -105,11 +105,23 @@ then do:
     vvalorAcrescimo = dec(ttCartaoLebes.valorAcrescimo). 
     vvalorTFC = dec(ttCartaoLebes.valorTFC). 
     vprincipal = vvalorTotal - vvalorAcrescimo.
-   
+    vdatainivigencia12 = ?.
+    vdatafimvigencia13 = ?.
     
     find first ttseguroprestamista no-error.
-    if avail ttcartaoLebes
-    then vvalorSeguroPrestamista = dec(ttseguroprestamista.valorSeguroPrestamista).
+    if avail ttseguroprestamista
+    then do:
+        vdia = int(entry(3,ttseguroprestamista.dataInicioVigencia,"-")).
+        vmes = int(entry(2,ttseguroprestamista.dataInicioVigencia,"-")).
+        vano = int(entry(1,ttseguroprestamista.dataInicioVigencia,"-")).
+        vdatainivigencia12        = date(vmes,vdia,vano).
+        vdia = int(entry(3,ttseguroprestamista.dataFimVigencia,"-")).
+        vmes = int(entry(2,ttseguroprestamista.dataFimVigencia,"-")).
+        vano = int(entry(1,ttseguroprestamista.dataFimVigencia,"-")).
+        vdatafimvigencia13        = date(vmes,vdia,vano).
+
+        vvalorSeguroPrestamista = dec(ttseguroprestamista.valorSeguroPrestamista).
+    end.
     if vvalorSeguroPrestamista = ? then vvalorSeguroPrestamista = 0.
 
     if ttpedidoCartaoLebes.tipoOperacao = "CDC"
