@@ -29,7 +29,12 @@ def temp-table ttfincotaetb serialize-name "return"
     field cotaslib      as int
     field cotasuso      as int    
     field planobloqueio   as char /* 0= liberado / 1 = Bloqueio / 2= senha gerente */
-    field mensagem   as char.
+    field mensagem   as char
+    field supcod     as int
+    field supnom     as char
+    field cotassuplib      as int
+    field cotassupuso      as int
+    field idtoken    AS CHAR.
 
 def temp-table ttsaida  no-undo serialize-name "conteudoSaida"
     field tstatus        as int serialize-name "status"
@@ -68,7 +73,7 @@ then do:
   create ttsaida.
   ttsaida.tstatus = if locked estab  then 500 else 404.
   ttsaida.descricaoStatus = "Estabelecimento de origem " + string(ttentrada.codigoFilial)
-                 + " Não encontrado.".
+                 + " Nao encontrado.".
 
   hsaida  = temp-table ttsaida:handle.
 
@@ -86,7 +91,7 @@ then do:
   create ttsaida.
   ttsaida.tstatus = if locked finan then 500 else 404.
   ttsaida.descricaoStatus = "plano " + string(ttentrada.codigoPlano) 
-                 + " Não encontrado.".
+                 + " Nao encontrado.".
 
   hsaida  = temp-table ttsaida:handle.
 
@@ -99,6 +104,8 @@ find first ttentrada.
 
 vplanobloqueio = "0".
 vmensagem = "".
+find estab WHERE estab.etbcod = int(ttentrada.codigoFilial) no-lock.
+FIND supervisor OF estab NO-LOCK NO-ERROR.
 
 create ttfincotaetb.
 ttfincotaetb.codigoFilial = ttentrada.codigoFilial.
@@ -119,7 +126,6 @@ then do:
         if avail fincotacllib
         then do:              
             ttfincotaetb.cotasuso = 0.
-            for each fincotaclplan of fincotacluster no-lock.
                 for each fincotaetb where 
                     fincotaetb.etbcod = fincotacllib.etbcod and
                     fincotaetb.fincod = fincotaclplan.fincod and
@@ -128,7 +134,6 @@ then do:
                     no-lock.
                     ttfincotaetb.cotasuso = ttfincotaetb.cotasuso + fincotaetb.cotasuso.
                 end.
-            end.              
             ttfincotaetb.dtivig       = fincotacllib.dtivig.
             ttfincotaetb.dtfvig       = fincotacllib.dtfvig.
             ttfincotaetb.cotaslib     = fincotacllib.cotaslib.
@@ -176,8 +181,45 @@ else do:
     end.        
 end.
 
+
+if avail fincotaclplan
+then do: 
+        find fincotacluster of fincotaclplan no-lock. 
+
+        find fincotasuplib  where 
+                fincotasuplib.fcccod = fincotacluster.fcccod and  
+                fincotasuplib.supcod = estab.supcod and 
+                fincotasuplib.dtivig <= today and
+               (fincotasuplib.dtfvig >= today or 
+                fincotasuplib.dtfvig = ?) 
+                     no-lock no-error.          
+        if avail fincotasuplib
+        then do:              
+            ttfincotaetb.cotassupuso = 0.
+                for each fincotasup where 
+                    fincotasup.supcod = estab.supcod and
+                    fincotasup.etbcod = estab.etbcod and
+                    fincotasup.fincod = fincotaclplan.fincod and
+                    fincotasup.dtivig = fincotasuplib.dtivig and
+                    fincotasup.dtfvig = fincotasuplib.dtfvig 
+                    no-lock.
+                    ttfincotaetb.cotassupuso = ttfincotaetb.cotassupuso + fincotasup.cotasuso.
+                end.
+            ttfincotaetb.cotassuplib     = fincotasuplib.cotaslib.
+            ttfincotaetb.supcod     = estab.supcod.
+            ttfincotaetb.supnom     = IF AVAIL supervisor THEN removeacento(supervisor.supnom) ELSE "".
+            ttfincotaetb.idtoken    = IF AVAIL supervisor THEN supervisor.idtoken ELSE "".
+            if ttfincotaetb.cotassuplib > ttfincotaetb.cotassupuso
+            then do:
+                vmensagem = vmensagem + chr(10) + " Deseja utilizar cotas do Regional " + ttfincotaetb.supnom  + "?".
+            end.
+
+        end.
+            
+end. 
 ttfincotaetb.planobloqueio = vplanobloqueio.
 ttfincotaetb.mensagem      = vmensagem.
+
 
 hSaida = temp-table ttfincotaetb:HANDLE.
 
@@ -189,7 +231,7 @@ end.
 else do:
     create ttsaida.
     ttsaida.tstatus = 500.
-    ttsaida.descricaoStatus = "Erro na Geração do JSON de SAIDA".
+    ttsaida.descricaoStatus = "Erro na Geracao do JSON de SAIDA".
 
     hsaida  = temp-table ttsaida:handle.
 
@@ -197,3 +239,4 @@ else do:
     message string(vlcSaida).
     return.
 end.
+
