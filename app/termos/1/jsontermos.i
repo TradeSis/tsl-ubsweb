@@ -42,6 +42,7 @@ def var vdatainivigencia12 as date.
 def var vdatafimvigencia13 as date.
 def var vvalorSeguroPrestamistaLiquido as dec.
 def var vvalorSeguroPrestamistaIof as dec.
+def var vpercSeguroPrestamistaIof as char.
 def var vvalorseguroRR as dec.
 def var vvalorSeguroPrestamista29 as char.
 def var vvalorSeguroPrestamista30 as dec.
@@ -229,9 +230,10 @@ then do:
     tttermos.termo = freplace(tttermos.termo,"~{tfc.perc~}",trim(string(vtfcPerc,">>>>>>>>9.99"))). 
     tttermos.termo = freplace(tttermos.termo,"~{vlIOF~}",ttcartaoLebes.valorIOF).
     tttermos.termo = freplace(tttermos.termo,"~{iof.perc~}",trim(string(viofPerc,">>>>>>>>9.99"))).
-    tttermos.termo = freplace(tttermos.termo,"~{princ~}",trim(string(vprincipal,">>>>>>>>9.99"))).
+    tttermos.termo = freplace(tttermos.termo,"~{vlPrinc~}",trim(string(vprincipal,">>>>>>>>9.99"))).
     tttermos.termo = freplace(tttermos.termo,"~{princ.perc~}",trim(string(vprincipalPerc,">>>>>>>>9.99"))).
     tttermos.termo = freplace(tttermos.termo,"~{seguro.perc~}",trim(string(vseguroperc,">>>>>>>>9.99"))).
+    tttermos.termo = freplace(tttermos.termo,"~{vlFinanciado~}",trim(string(vvalorFinanciado,">>>>>>>>9.99"))).
     
    
 
@@ -244,19 +246,27 @@ then do:
     tttermos.termo = freplace(tttermos.termo,"~{nroSorte~}",ttseguroprestamista.numeroSorteioSeguroPrestamista).    
     tttermos.termo = freplace(tttermos.termo,"~{spVlTotal~}",trim(string(vvalorSeguroPrestamista,">>>>>>>>9.99"))).
     tttermos.termo = freplace(tttermos.termo,"~{spVlLiq~}",trim(string(vvalorSeguroPrestamistaLiquido,">>>>>>>>9.99"))). 
-    tttermos.termo = freplace(tttermos.termo,"~{spVlIof~}",trim(string(vvalorSeguroPrestamistaIof,">>>>>>>>9.99"))).
     tttermos.termo = freplace(tttermos.termo,"~{spDtVigIni~}",string(vdatainivigencia12,"99/99/9999")).
     tttermos.termo = freplace(tttermos.termo,"~{spDtVigFim~}",string(vdatafimvigencia13,"99/99/9999")).
 
+    /* percentual IOF Calculo*/
+    vpercSeguroPrestamistaIof = substring(tttermos.termo,index(tttermos.termo,"spIof.perc#") + 11).
+    vpercSeguroPrestamistaIof = substring(vpercSeguroPrestamistaIof,1,index(vpercSeguroPrestamistaIof,"#") - 1).
+    vvalorSeguroPrestamistaIof = dec(vpercSeguroPrestamistaIof) no-error.
+    if vvalorSeguroPrestamistaIof = ? then vvalorSeguroPrestamistaIof = 0.
+    vvalorSeguroPrestamistaIof = round(vvalorSeguroPrestamista * vvalorSeguroPrestamistaIof / 100,2).
 
+    tttermos.termo = freplace(tttermos.termo,"~{spVlIof~}",trim(string(vvalorSeguroPrestamistaIof,">>>>>>>9.99"))).
+    tttermos.termo = freplace(tttermos.termo,"~{spIof.perc#" + vpercSeguroPrestamistaIof + "#~}",vpercSeguroPrestamistaIof).
+
+    /* percentual RR Calculo*/
     vvalorSeguroPrestamista29 = substring(tttermos.termo,index(tttermos.termo,"spRR.perc#") + 10).
     vvalorSeguroPrestamista29 = substring(vvalorSeguroPrestamista29,1,index(vvalorSeguroPrestamista29,"#") - 1).
-
     vvalorSeguroPrestamista30 = dec(vvalorSeguroPrestamista29) no-error.
     if vvalorSeguroPrestamista30 = ? then vvalorSeguroPrestamista30 = 0.
-    vvalorSeguroPrestamista = round(vvalorSeguroPrestamista * vvalorSeguroPrestamista30 / 100,2).
+    vvalorSeguroPrestamista30 = round(vvalorSeguroPrestamista * vvalorSeguroPrestamista30 / 100,2).
 
-    tttermos.termo = freplace(tttermos.termo,"~{spRR~}",trim(string(vvalorSeguroPrestamista,">>>>>>>9.99"))).
+    tttermos.termo = freplace(tttermos.termo,"~{spRR~}",trim(string(vvalorSeguroPrestamista30,">>>>>>>9.99"))).
     tttermos.termo = freplace(tttermos.termo,"~{spRR.perc#" + vvalorSeguroPrestamista29 + "#~}",vvalorSeguroPrestamista29).
 
 end.
