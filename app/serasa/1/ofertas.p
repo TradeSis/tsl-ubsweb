@@ -141,6 +141,21 @@ vmessage = no.
 {aco/acordo.i new} 
 
 run calcelegiveis (input ptpnegociacao, input clien.clicod, ?).
+
+find first ttnegociacao no-error.
+if not avail ttnegociacao
+then do:
+     create ttsaida.
+     ttsaida.tstatus = 204.
+     ttsaida.descricaoStatus = ?.
+
+     hsaida  = temp-table ttsaida:handle.
+
+     lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+     message string(vlcSaida).
+     return.
+end.
+
 for each ttnegociacao.
    
    find aconegoc of ttnegociacao no-lock.

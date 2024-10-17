@@ -283,7 +283,22 @@ if ($log=="true") {
     if (isset($jsonSaida)){
 
     if ($aplicacao === "serasa") {
-          echo json_encode($jsonSaida)."\n"; /* vou ter que tratar erornop diferente */
+            /* exemplo para tratar por funcao a saida 422 direto no index.php
+            if ($funcao == "ofertas") {
+
+            }
+            */
+            if (isset($jsonSaida["status"])) {
+                //echo "\nstatus="."-".$jsonSaida["status"]."\n";
+                retornaheader($jsonSaida["status"]);
+                unset($jsonSaida['status']);
+            }
+            if (!isset($jsonSaida["descricaoStatus"])) {
+                //echo "\nstatus="."-".$jsonSaida["status"]."\n";
+                unset($jsonSaida['descricaoStatus']);
+            }
+        
+        echo json_encode($jsonSaida)."\n";
     }
     else {
         if (isset($jsonSaida->status)) {
