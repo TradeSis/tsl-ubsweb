@@ -218,7 +218,7 @@ if avail ttcartaolebes
 then do:
 
     tttermos.termo = freplace(tttermos.termo,"~{parc.lista~}",vparcelas-lista).
-    tttermos.termo = freplace(tttermos.termo,"~{parc.vl~}",vparcelas-valor).
+    tttermos.termo = freplace(tttermos.termo,"~{parc.valor~}",vparcelas-valor).
     tttermos.termo = freplace(tttermos.termo,"~{qtdParc~}",ttcartaoLebes.qtdParcelas).
     tttermos.termo = freplace(tttermos.termo,"~{vlAcrescimo~}",ttcartaoLebes.valorAcrescimo).
     tttermos.termo = freplace(tttermos.termo,"~{nroContrato~}",ttcartaoLebes.numeroContrato).
