@@ -60,7 +60,7 @@ find first ttentrada no-error.
 if not avail ttentrada
 then do:
     create ttsaida.
-    ttsaida.tstatus = 400.
+    ttsaida.tstatus = 422.
     ttsaida.descricaoStatus = "Dados de Entrada Invalidos".
 
     hsaida  = temp-table ttsaida:handle.
@@ -91,8 +91,8 @@ end.
 if not avail clien
 then do:
      create ttsaida.
-     ttsaida.tstatus = 400.
-     ttsaida.descricaoStatus = "Dados de Entrada Invalidos".
+     ttsaida.tstatus = 422.
+     ttsaida.descricaoStatus = "Cliente nao encontrado".
 
      hsaida  = temp-table ttsaida:handle.
 
@@ -112,7 +112,7 @@ find aconegcli where aconegcli.clicod = clien.clicod and
 if not avail aconegcli
 then do:
    create ttsaida.
-   ttsaida.tstatus = 400.
+   ttsaida.tstatus = 422.
    ttsaida.descricaoStatus = "Oferta Invalida".
 
    hsaida  = temp-table ttsaida:handle.
@@ -126,7 +126,7 @@ else do:
    if aconegcli.idacordo <> ?
    then do:
       create ttsaida.
-      ttsaida.tstatus = 400.
+      ttsaida.tstatus = 422.
       ttsaida.descricaoStatus = "Oferta Possui acordo " + string(aconegcli.idacordo).
    
       hsaida  = temp-table ttsaida:handle.
@@ -140,8 +140,20 @@ end.
     FIND aconegoc WHERE aconegoc.negcod = aconegcli.negcod NO-LOCK.
     run calcelegiveis (input ptpnegociacao, input clien.clicod, aconegcli.negcod).
     
-    FIND FIRST ttnegociacao where ttnegociacao.negcod = aconegcli.negcod.
-    
+    FIND FIRST ttnegociacao where ttnegociacao.negcod = aconegcli.negcod no-error.
+    if not avail ttnegociacao
+    then do:
+       create ttsaida.
+       ttsaida.tstatus = 204.
+       ttsaida.descricaoStatus = ?.
+
+       hsaida  = temp-table ttsaida:handle.
+
+       lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+       message string(vlcSaida).
+       return.
+    end.
+
     CREATE ttoffers.
     ttoffers.offerId = aconegcli.id.
     
@@ -163,10 +175,10 @@ end.
 
         CREATE ttinstalments.
         ttinstalments.id = string(ttcondicoes.placod).
-        ttinstalments.vtotal = ttcondicoes.vlr_acordo.
+        ttinstalments.vtotal = round(ttcondicoes.vlr_acordo,2).
 
-         ttinstalments.totalWithoutInterest = ttcondicoes.vlr_acordo.
-         ttinstalments.discountValue = ttnegociacao.vlr_divida - ttcondicoes.vlr_acordo.
+         ttinstalments.totalWithoutInterest = round(ttcondicoes.vlr_acordo,2).
+         ttinstalments.discountValue = round((ttnegociacao.vlr_divida - ttcondicoes.vlr_acordo), 2).
          ttinstalments.discountPercentage = round(((ttinstalments.discountValue * 100) / ttnegociacao.vlr_divida) ,2).
          ttinstalments.instalment = ttcondicoes.qtd_vezes.
         
@@ -190,8 +202,8 @@ end.
          for each ttparcelas where ttparcelas.negcod = ttnegociacao.negcod and
                   ttparcelas.placod = ttcondicoes.placod.
                CREATE ttvalues.
-               ttvalues.vvalue = ttparcelas.vlr_parcela.
-               ttvalues.vtotal = ttparcelas.vlr_parcela.
+               ttvalues.vvalue = round(ttparcelas.vlr_parcela,2).
+               ttvalues.vtotal = round(ttparcelas.vlr_parcela,2).
                ttvalues.idpai = ttinstalments.id.
          end.      
          CREATE tttaxes.

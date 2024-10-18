@@ -19,7 +19,8 @@ DEF TEMP-TABLE ttacordos NO-UNDO serialize-name "acordos"
    FIELD vtotal AS DEC serialize-name "total"
    FIELD totalWithoutInterest AS DEC
    FIELD discountValue AS DEC
-   FIELD discountPercentage AS DEC.
+   FIELD discountPercentage AS DEC
+   field vlr_divida as dec.
    
 DEF TEMP-TABLE ttinstalments NO-UNDO serialize-name "instalments"
    FIELD instalment AS DEC
@@ -52,7 +53,7 @@ find first ttentrada no-error.
 if not avail ttentrada
 then do:
     create ttsaida.
-    ttsaida.tstatus = 400.
+    ttsaida.tstatus = 422.
     ttsaida.descricaoStatus = "Dados de Entrada Invalidos".
 
     hsaida  = temp-table ttsaida:handle.
@@ -79,8 +80,8 @@ end.
 if not avail clien
 then do:
      create ttsaida.
-     ttsaida.tstatus = 400.
-     ttsaida.descricaoStatus = "Dados de Entrada Invalidos".
+     ttsaida.tstatus = 422.
+     ttsaida.descricaoStatus = "Cliente nao encontrado".
 
      hsaida  = temp-table ttsaida:handle.
 
@@ -104,7 +105,7 @@ find aconegcli where aconegcli.clicod = clien.clicod and
 if not avail aconegcli
 then do:
    create ttsaida.
-   ttsaida.tstatus = 400.
+   ttsaida.tstatus = 422.
    ttsaida.descricaoStatus = "Oferta Invalida".
 
    hsaida  = temp-table ttsaida:handle.
@@ -114,11 +115,11 @@ then do:
    return.
 
 end.        
-else do:
+/* else do:
     if aconegcli.idacordo <> ?
     then do:
        create ttsaida.
-       ttsaida.tstatus = 400.
+       ttsaida.tstatus = 422.
        ttsaida.descricaoStatus = "Oferta Possui acordo " + string(aconegcli.idacordo).
     
        hsaida  = temp-table ttsaida:handle.
@@ -127,10 +128,51 @@ else do:
        message string(vlcSaida).
        return.
     end.
+end. */
+else do:
+
+find aconegcli where aconegcli.clicod = clien.clicod and
+                     aconegcli.id     = ttentrada.offerId
+   no-error.
+   
+   if aconegcli.idacordo <> ?
+   then do:
+		find aoacordo of aconegcli no-lock.
+		if aoacordo.dtacordo = today  and time - aoacordo.hracordo <= 3600
+		then DO:	
+            RUN criaAcordo.		
+		END.			
+		else do:
+			create ttsaida.
+           ttsaida.tstatus = 422.
+           ttsaida.descricaoStatus = "Oferta Possui acordo " + string(aconegcli.idacordo).
+        
+           hsaida  = temp-table ttsaida:handle.
+        
+           lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+           message string(vlcSaida).
+           return. 
+			
+		END.
+   end.
+
 end.
 
 run calcelegiveis (ptpnegociacao, clien.clicod,  aconegcli.negcod).
 find first ttnegociacao where ttnegociacao.negcod = aconegcli.negcod no-error.
+if not avail ttnegociacao
+then do:
+     create ttsaida.
+     ttsaida.tstatus = 204.
+     ttsaida.descricaoStatus = ?.
+
+     hsaida  = temp-table ttsaida:handle.
+
+     lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+     message string(vlcSaida).
+     return.
+end.
+
 vdtvencimento = ttentrada.dueDate.
 if weekday(vdtvencimento) = 7 /* sabado */ 
 then vdtvencimento = vdtvencimento + 2.
@@ -196,6 +238,7 @@ do on error undo:
     AoAcordo.HrEfetiva  = ?.
     aoAcordo.negcod     = ttnegociacao.negcod.
     aoAcordo.placod     = ttcondicoes.placod.
+    aoAcordo.vlr_divida = ttnegociacao.vlr_divida.
 /*
     aoAcordo.bancod      = banboleto.bancod.
     aoAcordo.nossoNumero = banboleto.nossoNumero.
@@ -207,9 +250,9 @@ do on error undo:
     CREATE ttacordos.
     ttacordos.offerId = aconegcli.id.
     ttacordos.agreementId = string(AoAcordo.IDAcordo).
-    ttacordos.vtotal = AoAcordo.VlAcordo .
-    ttacordos.totalWithoutInterest = AoAcordo.VlAcordo .
-    ttacordos.discountValue = ttnegociacao.vlr_divida - AoAcordo.VlAcordo.
+    ttacordos.vtotal = round(AoAcordo.VlAcordo,2) .
+    ttacordos.totalWithoutInterest = round(AoAcordo.VlAcordo,2).
+    ttacordos.discountValue = round((ttnegociacao.vlr_divida - AoAcordo.VlAcordo), 2).
     ttacordos.discountPercentage = round(((ttacordos.discountValue * 100) / ttnegociacao.vlr_divida) ,2).
     
     for each ttcontrato  where ttcontrato.negcod = ttnegociacao.negcod.
@@ -269,12 +312,14 @@ do on error undo:
             AoAcParcela.DtEnvio      = ?.
             AoAcParcela.Enviar       = no.
             AoAcParcela.VlJuros      = 0.
+            AoAcParcela.segprestamista = ttparcelas.segprestamista.
+            AoAcParcela.vlr_parcelaOriginal = ttparcelas.vlr_parcelaOriginal.
 
             CREATE ttinstalments.
             ttinstalments.instalment = vtitpar.
             ttinstalments.dueDate = AoAcParcela.DtVencimento.
-            ttinstalments.vvalue =  AoAcParcela.VlCobrado.
-            ttinstalments.vtotal =  AoAcParcela.VlCobrado.
+            ttinstalments.vvalue =  round(AoAcParcela.VlCobrado,2).
+            ttinstalments.vtotal =  round(AoAcParcela.VlCobrado,2).
             CREATE tttaxes.
             tttaxes.iof_percentage = 0.
             tttaxes.iof_totalValue = 0.
@@ -313,3 +358,31 @@ end.
 else do:
     put unformatted string(vlcSaida).
 end.  
+
+
+PROCEDURE criaAcordo.
+    CREATE ttacordos.
+        ttacordos.offerId = aconegcli.id.
+        ttacordos.agreementId = string(AoAcordo.IDAcordo).
+        ttacordos.vtotal = round(AoAcordo.VlAcordo,2).
+        ttacordos.totalWithoutInterest = round(AoAcordo.VlAcordo,2).
+        ttacordos.discountValue = round(aoacordo.vlr_divida - AoAcordo.VlAcordo,2).		
+        ttacordos.discountPercentage = round(((ttacordos.discountValue * 100) / aoacordo.vlr_divida) ,2).
+        
+        for each aoacparcela of aoacordo no-lock.
+            CREATE ttinstalments.
+            ttinstalments.instalment = aoacparcela.parcela.
+            ttinstalments.dueDate = AoAcParcela.DtVencimento.
+            ttinstalments.vvalue =  round(AoAcParcela.VlCobrado,2).
+            ttinstalments.vtotal =  round(AoAcParcela.VlCobrado,2).
+            CREATE tttaxes.
+            tttaxes.iof_percentage = 0.
+            tttaxes.iof_totalValue = 0.
+            tttaxes.cet_yearPercentage = 0.
+            tttaxes.cet_monthPercentage = 0.
+            tttaxes.cet_totalValue = 0.
+            tttaxes.interest_yearPercentage = 0.
+            tttaxes.interest_monthPercentage = 0.
+            tttaxes.interest_totalValue = 0.
+        end.
+END PROCEDURE.

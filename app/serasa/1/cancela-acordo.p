@@ -43,7 +43,7 @@ find first ttentrada no-error.
 if not avail ttentrada
 then do:
     create ttsaida.
-    ttsaida.tstatus = 400.
+    ttsaida.tstatus = 422.
     ttsaida.descricaoStatus = "Dados de Entrada Invalidos".
 
     hsaida  = temp-table ttsaida:handle.
@@ -64,8 +64,8 @@ end.
 if not avail clien
 then do:
      create ttsaida.
-     ttsaida.tstatus = 400.
-     ttsaida.descricaoStatus = "Dados de Entrada Invalidos".
+     ttsaida.tstatus = 422.
+     ttsaida.descricaoStatus = "Cliente nao encontrado".
 
      hsaida  = temp-table ttsaida:handle.
 
@@ -82,7 +82,7 @@ find aconegcli where aconegcli.clicod   = clien.clicod and
 if not avail aconegcli
 then do:
    create ttsaida.
-   ttsaida.tstatus = 400.
+   ttsaida.tstatus = 422.
    ttsaida.descricaoStatus = "Oferta Invalida".
 
    hsaida  = temp-table ttsaida:handle.

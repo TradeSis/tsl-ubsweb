@@ -287,7 +287,35 @@ if ($log=="true") {
     if (isset($jsonSaida)){
 
     if ($aplicacao === "serasa") {
-          echo json_encode($jsonSaida)."\n"; /* vou ter que tratar erornop diferente */
+            /* 
+                if (isset($jsonSaida["status"])) {
+                    //echo "\nstatus="."-".$jsonSaida["status"]."\n";
+                    retornaheader($jsonSaida["status"]);
+                    unset($jsonSaida['status']);
+                }
+                if (!isset($jsonSaida["descricaoStatus"])) {
+                    //echo "\nstatus="."-".$jsonSaida["status"]."\n";
+                    unset($jsonSaida['descricaoStatus']);
+                }
+            */
+            if (isset($jsonSaida["status"])) {
+                //echo "\nstatus="."-".$jsonSaida["status"]."\n";
+                if (($jsonSaida["status"] == 204) || ($jsonSaida["status"] == 500)){
+                    retornaheader($jsonSaida["status"]);
+                    unset($jsonSaida['status']); 
+                }else{
+                    $jsonSaida = array(
+                        "detail" => array(
+                            array(
+                                "loc" => array("", 0),
+                                "msg" => $jsonSaida["descricaoStatus"],
+                                "type" => ""
+                            )
+                        )
+                    ); 
+                }
+            }
+        echo json_encode($jsonSaida)."\n";
     }
     else {
         if (isset($jsonSaida->status)) {
