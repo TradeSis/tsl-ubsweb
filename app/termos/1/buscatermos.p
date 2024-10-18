@@ -19,6 +19,7 @@ def var vdtPriVen as char.
 def var vdtUltVen as char.
 def var vvalorEntrada as dec. 
 DEF VAR vrascunho AS LOG.
+DEF VAR vtermoteste AS LOG.
 
 def var pcobcod as int.
 
@@ -60,6 +61,9 @@ then return.
 vrascunho = no.
 if ttpedidoCartaoLebes.rascunho = "RASCUNHO"
 then vrascunho = yes.
+vtermoteste = no.
+if ttpedidoCartaoLebes.termoteste = "TERMOTESTE"
+then vtermoteste = yes.
 
 vvalorTotal = dec(ttpedidoCartaoLebes.valorTotal).
 vdia = int(entry(3,ttpedidoCartaoLebes.dataTransacao,"-")).
@@ -124,13 +128,7 @@ then do:
     end.
     if vvalorSeguroPrestamista = ? then vvalorSeguroPrestamista = 0.
 
-    if ttpedidoCartaoLebes.tipoOperacao = "CDC"
-    then do :
-        assign  vvalorFinanciado  = vprincipal + vvalorIOF + vvalorTFC.
-    end.    
-    else do:
-        assign  vvalorFinanciado  = vprincipal + vvalorIOF + vvalorSeguroPrestamista + vvalorTFC.
-    end.
+    assign  vvalorFinanciado  = vprincipal + vvalorIOF + vvalorSeguroPrestamista + vvalorTFC.
 	
     vprincipalPerc = vprincipal / (vvalorFinanciado) * 100.
     viofPerc = vvalorIOF / (vvalorFinanciado) * 100.
@@ -181,155 +179,19 @@ then do:
     
     vid = 0.
 
-    find termos where termos.idtermo = "TERMO-TESTE" no-lock no-error.
-    if avail termos 
+    if vtermoteste = yes 
     then do:
-        vid = 1.
-        if termos.rascunho = ? or vrascunho = no 
+        find termos where termos.idtermo = "TERMO-TESTE" no-lock no-error.
+        if avail termos 
         then do:
-            COPY-LOB from termos.termo to textFile.
-        end.
-        else do:
-            COPY-LOB from termos.rascunho to textFile.
-        end.
-        create tttermos.
-        tttermos.sequencial = string(vid).
-        tttermos.tipo = termos.idtermo.
-        tttermos.termo = string(textFile).
-        tttermos.quantidadeVias = string(termos.termoCopias).
-        tttermos.formato = "TXT".
-
-        run trocamnemos.
-        if ttpedidoCartaoLebes.formatoTermo = "BASE64"
-        then do:
-            tttermos.formato = "BASE64".
-            run encodebase64.
-        end.
-    end.
-
-    find termos where termos.idtermo = "CARNE-PARCELAS-CONTRATO" no-lock.
-    if termos.rascunho = ? or vrascunho = no 
-    then do:
-        COPY-LOB from termos.termo to textFile.
-    end.
-    else do:
-        COPY-LOB from termos.rascunho to textFile.
-    end.
-
-    do vcopias = 1 to termos.termoCopias:
-        vid = vid + 1.
-
-        create tttermos.
-        tttermos.sequencial = string(vid).
-        tttermos.tipo = termos.idtermo.
-        tttermos.termo = string(textFile).
-        tttermos.quantidadeVias = string(termos.termoCopias).
-        tttermos.formato = "TXT".
-
-
-        run trocamnemos.
-        if ttpedidoCartaoLebes.formatoTermo = "BASE64"
-        then do:
-            tttermos.formato = "BASE64".
-            run encodebase64.
-        end.
-    end.
-
-    if ttcartaolebes.contratoFinanceira = "S"
-    then do:
-        if ttpedidoCartaoLebes.tipoOperacao = "CDC"
-        then do:
-            find termos where termos.idtermo = "CONTRATO-FINANCEIRA-CDC" no-lock.
-        end.
-        else
-        if ttpedidoCartaoLebes.tipoOperacao = "EMPRESTIMO"
-        then do:
-            find termos where termos.idtermo = "CONTRATO-FINANCEIRA-EP" no-lock.
-        end.
-        else 
-        if ttpedidoCartaoLebes.tipoOperacao = "NOVACAO"
-        then do:
-            find termos where termos.idtermo = "CONTRATO-FINANCEIRA-NOVACAO" no-lock.
-        end. 
-    end.   
-    else do:
-        if ttpedidoCartaoLebes.tipoOperacao = "CDC"
-        then do:
-            find termos where termos.idtermo = "CONTRATO-DREBES-CDC" no-lock.
-        end.
-        else
-        if ttpedidoCartaoLebes.tipoOperacao = "EMPRESTIMO"
-        then do:
-            find termos where termos.idtermo = "CONTRATO-DREBES-EP" no-lock.
-        end.
-        else
-        if ttpedidoCartaoLebes.tipoOperacao = "NOVACAO"
-        then do:
-            find termos where termos.idtermo = "CONTRATO-DREBES-NOVACAO" no-lock.
-        end. 
-    end.
-
-    if termos.rascunho = ? or vrascunho = no 
-    then do:
-        COPY-LOB from termos.termo to textFile.
-    end.
-    else do:
-        COPY-LOB from termos.rascunho to textFile.
-    end.
-    
-    do vcopias = 1 to termos.termoCopias:
-
-        vid = vid + 1.
-
-        create tttermos.
-        tttermos.sequencial = string(vid).
-        tttermos.tipo = termos.idtermo.
-        tttermos.termo = string(textFile).
-        tttermos.quantidadeVias = string(termos.termoCopias).
-        tttermos.formato = "TXT".
-
-        run trocamnemos.
-        if ttpedidoCartaoLebes.formatoTermo = "BASE64"
-        then do:
-            tttermos.formato = "BASE64".
-            run encodebase64.
-        end.
-    end.
-
-    if vvalorSeguroPrestamista > 0
-    then do:
-        if ttpedidoCartaoLebes.tipoOperacao = "EMPRESTIMO"
-        then do:
-            find termos where termos.idtermo = "APOLICE-PRESTAMISTA-EP" no-lock.
-        end.  
-        else
-        if ttpedidoCartaoLebes.tipoOperacao = "NOVACAO"
-        then do:
-            find termos where termos.idtermo = "APOLICE-PRESTAMISTA-NOVACAO" no-lock.
-        end.  
-        else 
-        if ttpedidoCartaoLebes.tipoOperacao = "CDC"
-        then do:
-            if vcatcod = 41
+            vid = 1.
+            if termos.rascunho = ? or vrascunho = no 
             then do:
-                find termos where termos.idtermo = "APOLICE-PRESTAMISTA-MODA" no-lock.
-            end.   
-            else  do:
-                find termos where termos.idtermo = "APOLICE-PRESTAMISTA-MOVEIS" no-lock.
+                COPY-LOB from termos.termo to textFile.
             end.
-        end.
-
-        if termos.rascunho = ? or vrascunho = no 
-        then do:
-            COPY-LOB from termos.termo to textFile.
-        end.
-        else do:
-            COPY-LOB from termos.rascunho to textFile.
-        end.
-
-        do vcopias = 1 to termos.termoCopias:
-            vid = vid + 1.
-
+            else do:
+                COPY-LOB from termos.rascunho to textFile.
+            end.
             create tttermos.
             tttermos.sequencial = string(vid).
             tttermos.tipo = termos.idtermo.
@@ -343,9 +205,154 @@ then do:
                 tttermos.formato = "BASE64".
                 run encodebase64.
             end.
+        end.
+    end.
+    else do:
 
-        end. 
+        if avail ttcartaoLebes
+        then do:
+            find termos where termos.idtermo = "CARNE-PARCELAS-CONTRATO" no-lock.
+            if termos.rascunho = ? or vrascunho = no 
+            then do:
+                COPY-LOB from termos.termo to textFile.
+            end.
+            else do:
+                COPY-LOB from termos.rascunho to textFile.
+            end.
 
+                vid = vid + 1. 
+
+                create tttermos.
+                tttermos.sequencial = string(vid).
+                tttermos.tipo = termos.idtermo.
+                tttermos.termo = string(textFile).
+                tttermos.quantidadeVias = string(termos.termoCopias).
+                tttermos.formato = "TXT".
+
+
+                run trocamnemos.
+                if ttpedidoCartaoLebes.formatoTermo = "BASE64"
+                then do:
+                    tttermos.formato = "BASE64".
+                    run encodebase64.
+                end.
+        end.
+
+        if avail ttcartaolebes
+        then do:
+            if ttcartaolebes.contratoFinanceira = "S"
+            then do:
+                if ttpedidoCartaoLebes.tipoOperacao = "CDC"
+                then do:
+                    find termos where termos.idtermo = "CONTRATO-FINANCEIRA-CDC" no-lock.
+                end.
+                else
+                if ttpedidoCartaoLebes.tipoOperacao = "EMPRESTIMO"
+                then do:
+                    find termos where termos.idtermo = "CONTRATO-FINANCEIRA-EP" no-lock.
+                end.
+                else 
+                if ttpedidoCartaoLebes.tipoOperacao = "NOVACAO"
+                then do:
+                    find termos where termos.idtermo = "CONTRATO-FINANCEIRA-NOVACAO" no-lock.
+                end. 
+            end.   
+            else do:
+                if ttpedidoCartaoLebes.tipoOperacao = "CDC"
+                then do:
+                    find termos where termos.idtermo = "CONTRATO-DREBES-CDC" no-lock.
+                end.
+                else
+                if ttpedidoCartaoLebes.tipoOperacao = "EMPRESTIMO"
+                then do:
+                    find termos where termos.idtermo = "CONTRATO-DREBES-EP" no-lock.
+                end.
+                else
+                if ttpedidoCartaoLebes.tipoOperacao = "NOVACAO"
+                then do:
+                    find termos where termos.idtermo = "CONTRATO-DREBES-NOVACAO" no-lock.
+                end. 
+            end.
+
+            if termos.rascunho = ? or vrascunho = no 
+            then do:
+                COPY-LOB from termos.termo to textFile.
+            end.
+            else do:
+                COPY-LOB from termos.rascunho to textFile.
+            end.
+            
+
+                vid = vid + 1.
+
+                create tttermos.
+                tttermos.sequencial = string(vid).
+                tttermos.tipo = termos.idtermo.
+                tttermos.termo = string(textFile).
+                tttermos.quantidadeVias = string(termos.termoCopias).
+                tttermos.formato = "TXT".
+
+                run trocamnemos.
+                if ttpedidoCartaoLebes.formatoTermo = "BASE64"
+                then do:
+                    tttermos.formato = "BASE64".
+                    run encodebase64.
+                end.
+        end.
+
+        if avail ttseguroprestamista
+        then do:
+            if vvalorSeguroPrestamista > 0
+            then do:
+                if ttpedidoCartaoLebes.tipoOperacao = "EMPRESTIMO"
+                then do:
+                    find termos where termos.idtermo = "APOLICE-PRESTAMISTA-EP" no-lock.
+                end.  
+                else
+                if ttpedidoCartaoLebes.tipoOperacao = "NOVACAO"
+                then do:
+                    find termos where termos.idtermo = "APOLICE-PRESTAMISTA-NOVACAO" no-lock.
+                end.  
+                else 
+                if ttpedidoCartaoLebes.tipoOperacao = "CDC"
+                then do:
+                    if vcatcod = 41
+                    then do:
+                        find termos where termos.idtermo = "APOLICE-PRESTAMISTA-MODA" no-lock.
+                    end. 
+                    if vcatcod = 31  
+                    then  do:
+                        find termos where termos.idtermo = "APOLICE-PRESTAMISTA-MOVEIS" no-lock.
+                    end.
+                end.
+
+                if termos.rascunho = ? or vrascunho = no 
+                then do:
+                    COPY-LOB from termos.termo to textFile.
+                end.
+                else do:
+                    COPY-LOB from termos.rascunho to textFile.
+                end.
+
+                    vid = vid + 1.
+
+                    create tttermos.
+                    tttermos.sequencial = string(vid).
+                    tttermos.tipo = termos.idtermo.
+                    tttermos.termo = string(textFile).
+                    tttermos.quantidadeVias = string(termos.termoCopias).
+                    tttermos.formato = "TXT".
+
+                    run trocamnemos.
+                    if ttpedidoCartaoLebes.formatoTermo = "BASE64"
+                    then do:
+                        tttermos.formato = "BASE64".
+                        run encodebase64.
+                    end.
+
+
+            end.
+        end.
     end.
 
 

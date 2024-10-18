@@ -62,6 +62,7 @@ def var hSAIDA            as handle.
 
 DEFINE {1} shared TEMP-TABLE ttpedidoCartaoLebes NO-UNDO SERIALIZE-NAME "pedidoCartaoLebes"
     field id as char serialize-hidden
+    field   termoteste              as char
     field   rascunho              as char
     FIELD   formatoTermo          as char 
     FIELD   tipoOperacao          as char 
@@ -245,7 +246,6 @@ then do:
     tttermos.termo = freplace(tttermos.termo,"~{nroBilheteSP~}",ttseguroprestamista.numeroApoliceSeguroPrestamista). 
     tttermos.termo = freplace(tttermos.termo,"~{nroSorte~}",ttseguroprestamista.numeroSorteioSeguroPrestamista).    
     tttermos.termo = freplace(tttermos.termo,"~{spVlTotal~}",trim(string(vvalorSeguroPrestamista,">>>>>>>>9.99"))).
-    tttermos.termo = freplace(tttermos.termo,"~{spVlLiq~}",trim(string(vvalorSeguroPrestamistaLiquido,">>>>>>>>9.99"))). 
     tttermos.termo = freplace(tttermos.termo,"~{spDtVigIni~}",string(vdatainivigencia12,"99/99/9999")).
     tttermos.termo = freplace(tttermos.termo,"~{spDtVigFim~}",string(vdatafimvigencia13,"99/99/9999")).
 
@@ -254,10 +254,13 @@ then do:
     vpercSeguroPrestamistaIof = substring(vpercSeguroPrestamistaIof,1,index(vpercSeguroPrestamistaIof,"#") - 1).
     vvalorSeguroPrestamistaIof = dec(vpercSeguroPrestamistaIof) no-error.
     if vvalorSeguroPrestamistaIof = ? then vvalorSeguroPrestamistaIof = 0.
-    vvalorSeguroPrestamistaIof = round(vvalorSeguroPrestamista * vvalorSeguroPrestamistaIof / 100,2).
+    vvalorSeguroPrestamistaIof = truncate(vvalorSeguroPrestamista * vvalorSeguroPrestamistaIof / 100,2).
 
     tttermos.termo = freplace(tttermos.termo,"~{spVlIof~}",trim(string(vvalorSeguroPrestamistaIof,">>>>>>>9.99"))).
     tttermos.termo = freplace(tttermos.termo,"~{spIof.perc#" + vpercSeguroPrestamistaIof + "#~}",vpercSeguroPrestamistaIof).
+
+    vvalorSeguroPrestamistaLiquido = dec(vvalorSeguroPrestamista - vvalorSeguroPrestamistaIof).
+    tttermos.termo = freplace(tttermos.termo,"~{spVlLiq~}",trim(string(vvalorSeguroPrestamistaLiquido,">>>>>>>>9.99"))). 
 
     /* percentual RR Calculo*/
     vvalorSeguroPrestamista29 = substring(tttermos.termo,index(tttermos.termo,"spRR.perc#") + 10).
