@@ -226,12 +226,12 @@ for each ttnegociacao.
    CREATE ttoffers.
    ttoffers.id = aconegcli.id.
    ttoffers.idpai = ttnegociacao.negcod.
-   ttoffers.debtOriginalValues = ttnegociacao.vlr_aberto.
-   ttoffers.debtCurrentValues = ttnegociacao.vlr_divida.
-   ttoffers.interest = ttnegociacao.vlr_divida - ttnegociacao.vlr_aberto.
+   ttoffers.debtOriginalValues = round(ttnegociacao.vlr_aberto,2).
+   ttoffers.debtCurrentValues = round(ttnegociacao.vlr_divida,2).
+   ttoffers.interest = round(ttnegociacao.vlr_divida - ttnegociacao.vlr_aberto,2).
    ttoffers.maxInstalments = vmaxparcelas.                                                       
-   ttoffers.maxInstalmentValue = vvalorminparcelas.                                              
-   ttoffers.atSight = vplanoavista.                                                               
+   ttoffers.maxInstalmentValue = round(vvalorminparcelas,2).                                              
+   ttoffers.atSight = round(vplanoavista,2).                                                               
    ttoffers.discountValue = (if vplanoavista = 0 then 0 else ttnegociacao.vlr_divida - vplanoavista).  
    ttoffers.discountPercentage = round(((ttoffers.discountValue * 100) / ttnegociacao.vlr_divida) ,2).
    ttoffers.hasInstalments = vtemparcelamento. 
@@ -241,8 +241,8 @@ for each ttnegociacao.
       CREATE ttdebts.
       ttdebts.dueDate = ttcontrato.dt_venc.
       ttdebts.occurrenceDate = ttcontrato.dt_venc.
-      ttdebts.originalValue = ttcontrato.vlr_aberto.
-      ttdebts.currentValue = ttcontrato.vlr_divida.
+      ttdebts.originalValue = round(ttcontrato.vlr_aberto,2).
+      ttdebts.currentValue = round(ttcontrato.vlr_divida,2).
       ttdebts.contractNumber = string(ttcontrato.contnum).
       ttdebts.vtype = if ttcontrato.modcod BEGINS "CP" then "EMPRESTIMO" else "CREDIARIO".
       ttdebts.idpai = ttoffers.idpai. 
