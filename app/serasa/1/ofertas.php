@@ -35,23 +35,22 @@ fwrite($arquivo, $identificacao . "-retorno->" . json_encode($retorno) . "\n");
       $dados = $dados["conteudoSaida"][0];
       $jsonSaida = $dados;
   } else {
-        $conteudoSaida  = (object) json_decode($retorno,true);
+      $conteudoSaida  = (object) json_decode($retorno,true);
       $offers    = $conteudoSaida->JSON["offers"]; 
 
-      $acordo = array();
-      $novoarray = array();
-      foreach ($offers  as $instalment ) {
+      foreach ($offers as &$offer) {
+        foreach ($offer['debts'] as &$debt) {
+            if (is_array($debt['company']) && isset($debt['company'][0])) {
+              $debt['company'] = $debt['company'][0];
+            }
+            if (is_array($debt['companyOrigin']) && isset($debt['companyOrigin'][0])) {
+              $debt['companyOrigin'] = $debt['companyOrigin'][0];
+            }
+           
+        }
+    }
 
-          $instalment["debts"][0]["company"] = $instalment["debts"][0]["company"][0];
-          $instalment["debts"][0]["companyOrigin"] = $instalment["debts"][0]["companyOrigin"][0];
-
-        array_push($novoarray, $instalment);
-        
-      }
-
-      $acordo["offers"] = $novoarray;
-
-      $jsonSaida = $acordo;
+      $jsonSaida = $offers;
   }
 
 fclose($arquivo);

@@ -69,7 +69,7 @@ find first ttentrada no-error.
 if not avail ttentrada
 then do:
     create ttsaida.
-    ttsaida.tstatus = 400.
+    ttsaida.tstatus = 422.
     ttsaida.descricaoStatus = "Dados de Entrada Invalidos".
 
     hsaida  = temp-table ttsaida:handle.
@@ -95,8 +95,8 @@ end.
 if not avail clien
 then do:
      create ttsaida.
-     ttsaida.tstatus = 400.
-     ttsaida.descricaoStatus = "Dados de Entrada Invalidos".
+     ttsaida.tstatus = 422.
+     ttsaida.descricaoStatus = "Cliente nao encontrado".
 
      hsaida  = temp-table ttsaida:handle.
 
@@ -120,7 +120,7 @@ find aconegcli where aconegcli.clicod = clien.clicod and
 if not avail aconegcli
 then do:
    create ttsaida.
-   ttsaida.tstatus = 400.
+   ttsaida.tstatus = 422.
    ttsaida.descricaoStatus = "Oferta Invalida".
 
    hsaida  = temp-table ttsaida:handle.
@@ -134,7 +134,7 @@ else do:
     if aconegcli.idacordo = ?
     then do:
        create ttsaida.
-       ttsaida.tstatus = 400.
+       ttsaida.tstatus = 422.
        ttsaida.descricaoStatus = "Oferta Sem Acordo ".
     
        hsaida  = temp-table ttsaida:handle.
@@ -146,7 +146,7 @@ else do:
     if aconegcli.idacordo <> int(ttentrada.agreementId)
     then do:
        create ttsaida.
-       ttsaida.tstatus = 400.
+       ttsaida.tstatus = 422.
        ttsaida.descricaoStatus = "Acordo não corresponde ".
     
        hsaida  = temp-table ttsaida:handle.
@@ -162,7 +162,7 @@ end.
 if ttentrada.paymentMethod <> "boleto"
 then do:
     create ttsaida.
-       ttsaida.tstatus = 400.
+       ttsaida.tstatus = 422.
        ttsaida.descricaoStatus = "Metodo de Pagamento Invalido".
     
        hsaida  = temp-table ttsaida:handle.
@@ -179,7 +179,7 @@ find aoacordo where aoacordo.idacordo = aconegcli.idacordo no-lock.
 if aoacordo.dtcanc <> ?
 then do:
     create ttsaida.
-        ttsaida.tstatus = 400.
+        ttsaida.tstatus = 422.
         ttsaida.descricaoStatus = "Acordo Cancelado, não pode pagar".
     
         hsaida  = temp-table ttsaida:handle.
@@ -193,7 +193,7 @@ find AoAcParcela of aoacordo where AoAcParcela.Parcela = int(ttentrada.instalmen
 if not avail AoAcParcela
 then do:
     create ttsaida.
-       ttsaida.tstatus = 400.
+       ttsaida.tstatus = 422.
        ttsaida.descricaoStatus = "Parcela invalida".
     
        hsaida  = temp-table ttsaida:handle.
@@ -222,7 +222,7 @@ find banBoleto where recid(banBoleto) = par-recid-boleto no-lock
 if not avail banboleto
 then do:
     create ttsaida.
-       ttsaida.tstatus = 400.
+       ttsaida.tstatus = 422.
        ttsaida.descricaoStatus = "Erro na geralcao do Boleto".
     
        hsaida  = temp-table ttsaida:handle.

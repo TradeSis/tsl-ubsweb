@@ -283,21 +283,34 @@ if ($log=="true") {
     if (isset($jsonSaida)){
 
     if ($aplicacao === "serasa") {
-            /* exemplo para tratar por funcao a saida 422 direto no index.php
-            if ($funcao == "ofertas") {
-
-            }
+            /* 
+                if (isset($jsonSaida["status"])) {
+                    //echo "\nstatus="."-".$jsonSaida["status"]."\n";
+                    retornaheader($jsonSaida["status"]);
+                    unset($jsonSaida['status']);
+                }
+                if (!isset($jsonSaida["descricaoStatus"])) {
+                    //echo "\nstatus="."-".$jsonSaida["status"]."\n";
+                    unset($jsonSaida['descricaoStatus']);
+                }
             */
             if (isset($jsonSaida["status"])) {
                 //echo "\nstatus="."-".$jsonSaida["status"]."\n";
-                retornaheader($jsonSaida["status"]);
-                unset($jsonSaida['status']);
+                if (($jsonSaida["status"] == 204) || ($jsonSaida["status"] == 500)){
+                    retornaheader($jsonSaida["status"]);
+                    unset($jsonSaida['status']); 
+                }else{
+                    $jsonSaida = array(
+                        "detail" => array(
+                            array(
+                                "loc" => array("", 0),
+                                "msg" => $jsonSaida["descricaoStatus"],
+                                "type" => ""
+                            )
+                        )
+                    ); 
+                }
             }
-            if (!isset($jsonSaida["descricaoStatus"])) {
-                //echo "\nstatus="."-".$jsonSaida["status"]."\n";
-                unset($jsonSaida['descricaoStatus']);
-            }
-        
         echo json_encode($jsonSaida)."\n";
     }
     else {
