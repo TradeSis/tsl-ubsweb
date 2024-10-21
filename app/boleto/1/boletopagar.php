@@ -134,7 +134,7 @@ function isJson($string) {
         $Boleto  = (object) $result["retorno"];
         $confirmacaoEntrada = json_encode(array(
           "numero_banrisul" => $Boleto->numero_banrisul,
-          "data_pagamento" => $dtPagamento,
+          "data_pagamento" => $Boleto->data_pagamento,
           "cod_forma_pagamento" => $jsonEntrada->cod_forma_pagamento,
           "id_rastreabilidade" => $Boleto->id_rastreabilidade,
           "ind_confirma" => "S",
