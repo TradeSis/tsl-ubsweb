@@ -71,11 +71,14 @@ hsaida = TEMP-TABLE ttreturn:HANDLE.
                 then do:
  
                     for each ttrets.
+                        run log("     ID=" + ttproposta.idOperacaoMotor + " RETORNOS " + ttrets.chave +
+                                    " = " + ttrets.valor).  
+
                         p-ret-PROPS = p-ret-PROPS + 
                                       (if p-ret-PROPS = "" then "" else "&") +
                                        ttrets.chave + "=" + ttrets.valor.
 
-                        if ttrets.chave = "RET_MOTIVOS" and
+                        if ttrets.chave begins "RET_MOTIVO" and /* hlio 181024 1384 Motivo Reprovação - Motor de credito */
                            ttrets.valor <> ""
                         then do:
                             p-neuro-mens = p-neuro-mens + 
@@ -196,7 +199,7 @@ procedure log.
 
     def var varquivo as char.
 
-    varquivo = "/ws/log/Neurotech_" + string(today, "99999999") + ".log".
+    varquivo = "/ws/log/apipdv_atualizaNeuProposta" + string(today, "99999999") + ".log".
 
     output to value(varquivo) append.
     put unformatted string(time,"HH:MM:SS")
