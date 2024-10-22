@@ -74,7 +74,9 @@ vdataTransacao        = date(vmes,vdia,vano).
 vdataTransacaoExtenso = string(vdia,"99") + " de " + vmesext[vmes] + " de " + string(vano).
 
 
-find clien where clicod = int(ttpedidoCartaoLebes.codigoCliente) no-lock no-error. /* helio-gabriel busca clien */
+find clien where clien.clicod = int(ttpedidoCartaoLebes.codigoCliente) no-lock no-error. /* helio-gabriel busca clien */
+
+find neuclien where neuclien.clicod =  clien.clicod no-lock no-error.
 
 vdtPriVen = ?.
 vdtUltVen = ?.

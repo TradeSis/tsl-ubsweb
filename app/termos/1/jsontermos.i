@@ -212,8 +212,22 @@ then do:
     tttermos.termo = freplace(tttermos.termo,"~{end.pais~}","BRASIL"). 
     tttermos.termo = freplace(tttermos.termo,"~{email~}",clien.zona).
     tttermos.termo = freplace(tttermos.termo,"~{telefone~}",clien.fone).
-
+    tttermos.termo = freplace(tttermos.termo,"~{prof.clt~}"," ").
+    tttermos.termo = freplace(tttermos.termo,"~{prof.autom~}","X").
+    
+    
 end. 
+    
+if avail neuclien
+then do:
+    IF SUBSTRING(neuclien.catprof, 1, 2) = "AS" OR
+       SUBSTRING(neuclien.catprof, 1, 2) = "AP" OR
+       SUBSTRING(neuclien.catprof, 1, 2) = "AG" 
+    then do:
+        tttermos.termo = freplace(tttermos.termo,"~{prof.clt~}","X").
+        tttermos.termo = freplace(tttermos.termo,"~{prof.autom~}"," ").
+    end.
+end.
 
 if avail ttcartaolebes
 then do:
