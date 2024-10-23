@@ -137,23 +137,20 @@ find aconegcli where aconegcli.clicod = clien.clicod and
    
    if aconegcli.idacordo <> ?
    then do:
-		find aoacordo of aconegcli no-lock.
-		if aoacordo.dtacordo = today  and time - aoacordo.hracordo <= 3600
-		then DO:	
-            RUN criaAcordo.		
-		END.			
-		else do:
-			create ttsaida.
-           ttsaida.tstatus = 422.
-           ttsaida.descricaoStatus = "Oferta Possui acordo " + string(aconegcli.idacordo).
-        
-           hsaida  = temp-table ttsaida:handle.
-        
-           lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
-           message string(vlcSaida).
-           return. 
-			
-		END.
+                find aoacordo of aconegcli no-lock.
+                if aoacordo.dtacordo = today  and time - aoacordo.hracordo <= 3600
+                then DO:        
+                    RUN criaAcordo.                
+                END.                        
+                else do: 
+                    create ttsaida.
+                   ttsaida.tstatus = 422.
+                   ttsaida.descricaoStatus = "Oferta Possui acordo " + string(aconegcli.idacordo).
+                   hsaida  = temp-table ttsaida:handle.
+                   lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+                   message string(vlcSaida).
+                   return. 
+                END.
    end.
 
 end.
@@ -366,7 +363,7 @@ PROCEDURE criaAcordo.
         ttacordos.agreementId = string(AoAcordo.IDAcordo).
         ttacordos.vtotal = round(AoAcordo.VlAcordo,2).
         ttacordos.totalWithoutInterest = round(AoAcordo.VlAcordo,2).
-        ttacordos.discountValue = round(aoacordo.vlr_divida - AoAcordo.VlAcordo,2).		
+        ttacordos.discountValue = round(aoacordo.vlr_divida - AoAcordo.VlAcordo,2).                
         ttacordos.discountPercentage = round(((ttacordos.discountValue * 100) / aoacordo.vlr_divida) ,2).
         
         for each aoacparcela of aoacordo no-lock.

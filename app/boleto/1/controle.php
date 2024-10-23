@@ -28,6 +28,11 @@ if (!isset($funcao)) {
     $funcao=$parametro;
     $parametro=null;
   }
+  /* helio 231024 - serasa */
+  if ($parametro=="barramentoEmitir2") {
+    $funcao=$parametro;
+    $parametro=null;
+  }
   
 }
 //echo "funcao=".$funcao;
@@ -77,6 +82,19 @@ if ($metodo=="POST" ) {
       case "boletopagar":
           include 'boletopagar.php';
     break;
+    
+    /* helio 23102024 - serasa */
+      case "barramentoEmitir2":
+          if (isset($jsonEntrada)){
+            include 'barramentoEmitir2.php';
+          } else {
+            $jsonSaida = json_decode(json_encode(
+              array("erro" => "400",
+                  "retorno" => "conteudo JSON vazio 1")
+                ), TRUE);
+          }
+      break;
+
     default:
           $jsonSaida = json_decode(json_encode(
           array("erro" => "400",

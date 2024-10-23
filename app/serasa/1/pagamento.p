@@ -6,6 +6,10 @@ def var lokjson as log.                 /* LOGICAL DE APOIO */
 def var hentrada as handle.             /* HANDLE ENTRADA */
 def var hsaida   as handle.             /* HANDLE SAIDA */
 
+def var par-base64Boleto as char.
+DEF VAR vMEMPTR AS MEMPTR  NO-UNDO.
+DEF VAR vloop   AS INT     NO-UNDO.
+
 /* MODELO DADOS ENTRADA
 {
   "document": "23599482020",
@@ -53,8 +57,8 @@ def temp-table ttpagamento  no-undo serialize-name "pagamento"  /* JSON SAIDA */
     field barCode   as CHAR serialize-name "barCode"
     field digitLine   as CHAR serialize-name "digitLine"
     field vbase64   as CHAR serialize-name "base64"
-    field pixCode   as CHAR serialize-name "pixCode"
-    field qrCode   as CHAR serialize-name "qrCode".
+/*    field pixCode   as CHAR serialize-name "pixCode"
+    field qrCode   as CHAR serialize-name "qrCode" */.
 
 
 def temp-table ttsaida  no-undo serialize-name "conteudoSaida"  /* JSON SAIDA CASO ERRO */
@@ -159,10 +163,10 @@ else do:
 end.
 
 
-if ttentrada.paymentMethod <> "boleto"
+if ttentrada.paymentMethod <> "bankslip"  /* helio 231024 */
 then do:
     create ttsaida.
-       ttsaida.tstatus = 422.
+       ttsaida.tstatus = 204.
        ttsaida.descricaoStatus = "Metodo de Pagamento Invalido".
     
        hsaida  = temp-table ttsaida:handle.
@@ -203,6 +207,70 @@ then do:
        return.
 end.
 
+/* Verifica Se Parcela ja está com boleto associado */
+ 
+            find first banbolOrigem  where 
+                banbolorigem.tabelaOrigem = "SERASA" and
+                banbolorigem.chaveOrigem  = "idacordo,parcela" and
+                banbolorigem.dadosOrigem  = string(aoacordo.idacordo) + "," + 
+                           string(aoacparcela.parcela)
+                no-lock no-error.
+            if avail banbolorigem
+            then do:
+                find banboleto of banbolorigem no-lock no-error.
+                if avail banboleto
+                then do:
+                    if banBoleto.DtEmissao = today /* idenpo... */
+                    then do:
+                        create ttpagamento.  
+                        ttpagamento.offerId = aconegcli.id. 
+                        ttpagamento.agreementId = string(aoacordo.idacordo). 
+                        ttpagamento.dueDate = aoacparcela.DtVencimento. 
+                        ttpagamento.instalment = aoacparcela.parcela. 
+                        ttpagamento.instalmentValue = aoacparcela.VlCobrado. 
+                        ttpagamento.paymentMethod = ttentrada.paymentMethod. 
+                        ttpagamento.barCode = banboleto.codigoBarras. 
+                        ttpagamento.digitLine = banboleto.linhaDigitavel.  
+
+                        input from value("/admcom/tmp/serasa/boletobase64/" + string(recid(banboleto))).
+                        import par-base64Boleto.
+                        output close.
+                        
+                        ttpagamento.vbase64 = par-base64Boleto.
+
+                        hsaida  = TEMP-TABLE ttpagamento:handle.
+                        lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+
+                        /* export LONG VAR*/
+                        if length(vlcsaida) > 30000
+                        then do:
+                            COPY-LOB FROM vlcsaida TO vMEMPTR.
+                            DO vLOOP = 1 TO LENGTH(vlcsaida): 
+                                put unformatted GET-STRING(vMEMPTR, vLOOP, 1). 
+                            END.
+                        end.
+                        else do:
+                            put unformatted string(vlcSaida).
+                        end.  
+                        return.
+                        
+                    end.
+                    else do:
+                        create ttsaida.
+                        ttsaida.tstatus = 422.
+                        ttsaida.descricaoStatus = "Boleto Ja Registrado para Parcela".
+                        hsaida  = temp-table ttsaida:handle.
+                        lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
+                        message string(vlcSaida).
+                        return.
+                    end.
+                    
+                end.
+            end.
+
+
+
+
 run bol/geradadosboleto.p (
       input 104, /* Banco do Boleto */
       input ?,      /* Bancarteira especifico */
@@ -234,10 +302,11 @@ end.
 
       if banboleto.bancod = 104
       then do:
-          run api/barramentoemitir.p 
+          run api/barramentoemitir2.p 
                   (recid(banboleto),  
                       output vstatus , 
-                      output vmensagem_erro).
+                      output vmensagem_erro,
+                      output par-base64Boleto).
           if vstatus <> "S"
           then do:
             create ttsaida.
@@ -274,11 +343,12 @@ end.
                 ttpagamento.paymentMethod = ttentrada.paymentMethod. 
                 ttpagamento.barCode = banboleto.codigoBarras. 
                 ttpagamento.digitLine = banboleto.linhaDigitavel.  
-                /*ttpagamento.vbase64 = "JVBERi0xLjQNCiWqq6ytD[generic_base64]==".*/ 
-                /*
-*ttpagamento.pixCode = "00020126360014BR.GOV.BCB.PIX01143690558600018052040000530398654074000.005802BR5912QA TEST LTDA6009SAO PAULO62160512PAGAMENTO1QA6304EF69".
-*ttpagamento.qrCode = "983874277584054862353623720346605218569864170938".
-                */
+                ttpagamento.vbase64 = par-base64Boleto.
+                
+                output to value("/admcom/tmp/serasa/boletobase64/" + string(recid(banboleto))).
+                export par-base64Boleto.
+                output close.
+
             end.
     end.
     
@@ -289,8 +359,6 @@ hsaida  = TEMP-TABLE ttpagamento:handle.
 lokJson = hsaida:WRITE-JSON("LONGCHAR", vlcSaida, TRUE).
 
 /* export LONG VAR*/
-DEF VAR vMEMPTR AS MEMPTR  NO-UNDO.
-DEF VAR vloop   AS INT     NO-UNDO.
 if length(vlcsaida) > 30000
 then do:
     COPY-LOB FROM vlcsaida TO vMEMPTR.
@@ -301,3 +369,4 @@ end.
 else do:
     put unformatted string(vlcSaida).
 end.  
+

@@ -175,9 +175,9 @@ end.
 
         CREATE ttinstalments.
         ttinstalments.id = string(ttcondicoes.placod).
-        ttinstalments.vtotal = round(ttcondicoes.vlr_acordo,2).
+        ttinstalments.vtotal = ttcondicoes.vlr_acordo.
 
-         ttinstalments.totalWithoutInterest = round(ttcondicoes.vlr_acordo,2).
+         ttinstalments.totalWithoutInterest = ttcondicoes.vlr_acordo.
          ttinstalments.discountValue = round((ttnegociacao.vlr_divida - ttcondicoes.vlr_acordo), 2).
          ttinstalments.discountPercentage = round(((ttinstalments.discountValue * 100) / ttnegociacao.vlr_divida) ,2).
          ttinstalments.instalment = ttcondicoes.qtd_vezes.
@@ -219,7 +219,6 @@ end.
          
     end.
     ttoffers.vtype = (if vtemparcelamento = true then "DIFFERENTS" else "EQUALS").
-
 
 
 hsaida =  DATASET dsNegociacao:HANDLE.
