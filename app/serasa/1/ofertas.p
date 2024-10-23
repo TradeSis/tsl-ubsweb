@@ -229,13 +229,20 @@ for each ttnegociacao.
    ttoffers.debtOriginalValues = round(ttnegociacao.vlr_aberto,2).
    ttoffers.debtCurrentValues = round(ttnegociacao.vlr_divida,2).
    ttoffers.interest = round(ttnegociacao.vlr_divida - ttnegociacao.vlr_aberto,2).
-   ttoffers.maxInstalments = vmaxparcelas.                                                       
-   ttoffers.maxInstalmentValue = round(vvalorminparcelas,2).                                              
    ttoffers.atSight = round(vplanoavista,2).                                                               
    ttoffers.discountValue = (if vplanoavista = 0 then 0 else ttnegociacao.vlr_divida - vplanoavista).  
-   ttoffers.discountPercentage = round(((ttoffers.discountValue * 100) / ttnegociacao.vlr_divida) ,2).
+   ttoffers.discountPercentage = truncate(((ttoffers.discountValue * 100) / ttnegociacao.vlr_divida) ,2).
    ttoffers.hasInstalments = vtemparcelamento. 
-      
+   if vtemparcelamento
+   then do:
+        ttoffers.maxInstalments = ?.
+        ttoffers.maxInstalmentValue = ?.
+   end.        
+   else do:
+        ttoffers.maxInstalments = vmaxparcelas.                                                        
+        ttoffers.maxInstalmentValue = round(vvalorminparcelas,2).                                              
+   end.        
+          
 
    for each ttcontrato where ttcontrato.negcod = ttnegociacao.negcod.
       CREATE ttdebts.
