@@ -129,7 +129,7 @@ end.
 
 tdias = 0.
 
-find first rfnparam where rfnparam.dtinivig <= today 
+find last rfnparam where rfnparam.dtinivig <= today 
                           no-lock no-error.
 if avail rfnparam 
 then do:
@@ -240,10 +240,10 @@ then do:
         end.
 
     end.
-    
+/*    message rfnparam.diasAtrasoMax tdias rfnparam.diasAtrasoMax > 0 tdias <  rfnparam.diasAtrasoMax.    */
     if  rfnparam.diasAtrasoMax > 0
     then do:
-        if tdias <  rfnparam.diasAtrasoMax
+        if tdias >=  rfnparam.diasAtrasoMax
         then do:
             for each ttcontrato.
                 delete ttcontrato.
